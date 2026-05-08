@@ -1,7 +1,7 @@
 export const siteConfig = {
-  name: "PDF Online",
-  domain: "seudominio.com.br",
-  contactEmail: "contato@seudominio.com.br",
+  name: "PDF Agora",
+  domain: "pdfagora.com.br",
+  contactEmail: "macedourania@gmail.com",
   premiumCheckoutUrl: "",
   adsensePublisherId: "ca-pub-SEU-CODIGO-ADSENSE"
 };
