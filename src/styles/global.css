@@ -524,3 +524,56 @@ details p {
     flex-direction: column;
   }
 }
+
+.compression-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.compression-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid #eee2d2;
+  border-radius: 18px;
+  background: #f8f4ee;
+  cursor: pointer;
+}
+
+.compression-card.selected {
+  border: 2px solid #b47839;
+  background: #fffaf4;
+}
+
+.compression-card input {
+  margin-top: 4px;
+}
+
+.compression-card strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.compression-card span {
+  display: block;
+  color: #75685c;
+  line-height: 1.45;
+}
+
+.output-name select {
+  width: 100%;
+  padding: 15px;
+  border-radius: 14px;
+  border: 1px solid #d8c5ad;
+  font-size: 16px;
+  background: white;
+}
+
+@media (max-width: 720px) {
+  .compression-options {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,5 +1,9 @@
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import JSZip from "jszip";
+import * as pdfjsLib from "pdfjs-dist/build/pdf.mjs";
+import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
 export async function mergePdfFiles(files) {
   const mergedPdf = await PDFDocument.create();
@@ -88,6 +92,7 @@ export async function imageFilesToPdf(files) {
 
 export async function compressPdfLight(file) {
   const arrayBuffer = await file.arrayBuffer();
+
   const pdf = await PDFDocument.load(arrayBuffer, {
     ignoreEncryption: true
   });
@@ -98,6 +103,88 @@ export async function compressPdfLight(file) {
   });
 
   return new Blob([bytes], {
+    type: "application/pdf"
+  });
+}
+
+function canvasToJpegBlob(canvas, quality) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) {
+          reject(new Error("Não foi possível gerar a imagem comprimida."));
+          return;
+        }
+
+        resolve(blob);
+      },
+      "image/jpeg",
+      quality
+    );
+  });
+}
+
+export async function compressPdfStrong(file, options = {}) {
+  const scale = options.scale || 0.75;
+  const quality = options.quality || 0.42;
+
+  const arrayBuffer = await file.arrayBuffer();
+
+  const loadingTask = pdfjsLib.getDocument({
+    data: new Uint8Array(arrayBuffer)
+  });
+
+  const sourcePdf = await loadingTask.promise;
+  const outputPdf = await PDFDocument.create();
+
+  for (let pageNumber = 1; pageNumber <= sourcePdf.numPages; pageNumber++) {
+    const page = await sourcePdf.getPage(pageNumber);
+
+    const originalViewport = page.getViewport({ scale: 1 });
+    const renderViewport = page.getViewport({ scale });
+
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d", { alpha: false });
+
+    canvas.width = Math.floor(renderViewport.width);
+    canvas.height = Math.floor(renderViewport.height);
+
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    await page.render({
+      canvasContext: context,
+      viewport: renderViewport
+    }).promise;
+
+    const jpegBlob = await canvasToJpegBlob(canvas, quality);
+    const jpegBytes = await jpegBlob.arrayBuffer();
+
+    const jpgImage = await outputPdf.embedJpg(jpegBytes);
+
+    const newPage = outputPdf.addPage([
+      originalViewport.width,
+      originalViewport.height
+    ]);
+
+    newPage.drawImage(jpgImage, {
+      x: 0,
+      y: 0,
+      width: originalViewport.width,
+      height: originalViewport.height
+    });
+
+    canvas.width = 0;
+    canvas.height = 0;
+  }
+
+  sourcePdf.cleanup?.();
+
+  const compressedBytes = await outputPdf.save({
+    useObjectStreams: true
+  });
+
+  return new Blob([compressedBytes], {
     type: "application/pdf"
   });
 }

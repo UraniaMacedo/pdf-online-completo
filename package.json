@@ -9,11 +9,11 @@
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
-    "vite": "latest",
+    "jszip": "latest",
+    "pdf-lib": "latest",
+    "pdfjs-dist": "^5.7.284",
     "react": "latest",
     "react-dom": "latest",
-    "pdf-lib": "latest",
-    "jszip": "latest"
-  },
-  "devDependencies": {}
+    "vite": "latest"
+  }
 }
