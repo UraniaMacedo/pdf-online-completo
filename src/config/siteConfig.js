@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: "PDF AGORA",
   domain: "pdfagora.com.br",
-  contactEmail: "macedourania@gmail.com",
+  contactEmail: "contato@pdfagora.com.br",
   premiumCheckoutUrl: "",
-  adsensePublisherId: "ca-pub-SEU-CODIGO-ADSENSE"
+  adsensePublisherId: "ca-pub-5046960619406551"
 };
