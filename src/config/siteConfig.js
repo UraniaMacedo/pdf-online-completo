@@ -1,5 +1,5 @@
 export const siteConfig = {
-  name: "PDF Agora",
+  name: "PDF AGORA",
   domain: "pdfagora.com.br",
   contactEmail: "macedourania@gmail.com",
   premiumCheckoutUrl: "",
