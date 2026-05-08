@@ -1,16 +1,23 @@
 import { siteConfig } from "../config/siteConfig.js";
+import UserMenu from "./UserMenu.jsx";
 
-export default function Header() {
+export default function Header({ session, onOpenAuth, onSignOut }) {
   return (
     <header className="hero">
       <nav className="topbar">
         <strong>{siteConfig.name}</strong>
 
-        <div>
+        <div className="topbar-links">
           <a href="#ferramentas">Ferramentas</a>
           <a href="#planos">Premium</a>
           <a href="#faq">FAQ</a>
         </div>
+
+        <UserMenu
+          session={session}
+          onOpenAuth={onOpenAuth}
+          onSignOut={onSignOut}
+        />
       </nav>
 
       <div className="badge">Ferramentas PDF Online</div>

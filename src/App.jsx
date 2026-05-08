@@ -8,7 +8,9 @@ import Faq from "./components/Faq.jsx";
 import PremiumSection from "./components/PremiumSection.jsx";
 import LegalPages from "./components/LegalPages.jsx";
 import Footer from "./components/Footer.jsx";
+import AuthModal from "./components/AuthModal.jsx";
 import { getToolById, tools } from "./data/tools.js";
+import { supabase } from "./lib/supabaseClient.js";
 
 function getInitialToolId() {
   const path = window.location.pathname.replace("/", "");
@@ -17,16 +19,35 @@ function getInitialToolId() {
 
 export default function App() {
   const [activeToolId, setActiveToolId] = useState(getInitialToolId);
+  const [session, setSession] = useState(null);
+  const [authModal, setAuthModal] = useState(null);
 
   const activeTool = useMemo(() => getToolById(activeToolId), [activeToolId]);
 
   useEffect(() => {
-    document.title = `${activeTool.seoTitle} | PDF Online`;
+    document.title = `${activeTool.seoTitle} | PDF AGORA`;
+
     const description = document.querySelector("meta[name='description']");
     if (description) {
       description.setAttribute("content", activeTool.seoDescription);
     }
   }, [activeTool]);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+    });
+
+    const {
+      data: { subscription }
+    } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+      setSession(currentSession);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   function handleSelectTool(toolId) {
     setActiveToolId(toolId);
@@ -42,9 +63,24 @@ export default function App() {
     }, 50);
   }
 
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+  }
+
   return (
     <main className="page">
-      <Header />
+      <Header
+        session={session}
+        onOpenAuth={setAuthModal}
+        onSignOut={handleSignOut}
+      />
+
+      {authModal && (
+        <AuthModal
+          initialMode={authModal}
+          onClose={() => setAuthModal(null)}
+        />
+      )}
 
       <AdSlot label="Anúncio superior" />
 
