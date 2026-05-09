@@ -29,8 +29,8 @@ export default function PremiumSection({ session, premiumStatus, onOpenAuth }) {
           </div>
         ) : (
           <div className="premium-warning">
-            O Premium já está preparado para contas cadastradas. Nesta primeira
-            fase, a ativação é feita por solicitação de contato.
+            O Premium está disponível para contas cadastradas. Nesta fase
+            inicial, a ativação é feita por solicitação de contato.
           </div>
         )}
       </div>
