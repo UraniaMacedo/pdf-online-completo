@@ -1,6 +1,15 @@
 import { siteConfig } from "../config/siteConfig.js";
 
-export default function PremiumSection() {
+export default function PremiumSection({ session, premiumStatus, onOpenAuth }) {
+  const contactSubject = encodeURIComponent("Ativação do Plano Premium - PDF AGORA");
+  const contactBody = encodeURIComponent(
+    session?.user?.email
+      ? `Olá, quero ativar o Plano Premium do PDF AGORA.\n\nE-mail da minha conta: ${session.user.email}`
+      : "Olá, quero ativar o Plano Premium do PDF AGORA."
+  );
+
+  const contactUrl = `mailto:${siteConfig.contactEmail}?subject=${contactSubject}&body=${contactBody}`;
+
   return (
     <section className="premium-section" id="planos">
       <div className="premium-copy">
@@ -9,22 +18,31 @@ export default function PremiumSection() {
         <h2>Mais liberdade para usar o PDF AGORA</h2>
 
         <p>
-          O PDF AGORA pode ser usado gratuitamente com anúncios. O plano Premium
-          será ideal para quem precisa editar arquivos maiores, usar as
-          ferramentas com mais frequência e navegar sem anúncios.
+          Use o PDF AGORA gratuitamente ou ative o Premium para navegar sem
+          anúncios e ter acesso prioritário aos novos recursos da plataforma.
         </p>
 
-        <div className="premium-warning">
-          O plano Premium está sendo preparado. Em breve, usuários poderão usar
-          mais recursos, com menos limites e sem anúncios.
-        </div>
+        {premiumStatus?.isPremium ? (
+          <div className="premium-warning">
+            Seu plano Premium está ativo. Os espaços de anúncio ficam ocultos
+            enquanto você estiver conectado nesta conta.
+          </div>
+        ) : (
+          <div className="premium-warning">
+            O Premium já está preparado para contas cadastradas. Nesta primeira
+            fase, a ativação é feita por solicitação de contato.
+          </div>
+        )}
       </div>
 
       <div className="plans-grid">
         <div className="plan-card free-plan">
           <span className="plan-label">Gratuito</span>
+
           <h3>Plano Grátis</h3>
+
           <strong>R$ 0</strong>
+
           <p>Para quem precisa resolver tarefas rápidas com PDF.</p>
 
           <ul>
@@ -42,30 +60,35 @@ export default function PremiumSection() {
 
         <div className="plan-card premium-plan">
           <span className="plan-label highlight">Premium</span>
+
           <h3>Plano Premium</h3>
-          <strong>Em breve</strong>
+
+          <strong>R$ 40/ano</strong>
+
           <p>Para quem usa PDF com frequência e quer mais praticidade.</p>
 
           <ul>
-            <li>Sem anúncios</li>
-            <li>Arquivos maiores</li>
-            <li>Mais usos por dia</li>
-            <li>Conversões em lote</li>
-            <li>Recursos avançados</li>
+            <li>Sem anúncios ao entrar na conta Premium</li>
+            <li>Acesso prioritário a novos recursos</li>
+            <li>Preparado para arquivos maiores</li>
+            <li>Preparado para conversões em lote</li>
+            <li>Conta identificada por e-mail</li>
           </ul>
 
-          {siteConfig.premiumCheckoutUrl ? (
-            <a
-              className="primary-button small"
-              href={siteConfig.premiumCheckoutUrl}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Assinar Premium
+          {premiumStatus?.isPremium ? (
+            <button className="primary-button small" disabled>
+              Premium ativo
+            </button>
+          ) : session?.user ? (
+            <a className="primary-button small" href={contactUrl}>
+              Solicitar ativação
             </a>
           ) : (
-            <button className="primary-button small" disabled>
-              Em breve
+            <button
+              className="primary-button small"
+              onClick={() => onOpenAuth("signup")}
+            >
+              Criar conta Premium
             </button>
           )}
         </div>

@@ -11,6 +11,7 @@ import Footer from "./components/Footer.jsx";
 import AuthModal from "./components/AuthModal.jsx";
 import { getToolById, tools } from "./data/tools.js";
 import { supabase } from "./lib/supabaseClient.js";
+import { usePremiumStatus } from "./hooks/usePremiumStatus.js";
 
 function getInitialToolId() {
   const path = window.location.pathname.replace("/", "");
@@ -23,6 +24,8 @@ export default function App() {
   const [authModal, setAuthModal] = useState(null);
 
   const activeTool = useMemo(() => getToolById(activeToolId), [activeToolId]);
+  const premiumStatus = usePremiumStatus(session);
+  const isPremium = premiumStatus.isPremium;
 
   useEffect(() => {
     document.title = `${activeTool.seoTitle} | PDF AGORA`;
@@ -71,6 +74,7 @@ export default function App() {
     <main className="page">
       <Header
         session={session}
+        premiumStatus={premiumStatus}
         onOpenAuth={setAuthModal}
         onSignOut={handleSignOut}
       />
@@ -82,7 +86,7 @@ export default function App() {
         />
       )}
 
-      <AdSlot label="Anúncio superior" />
+      {!isPremium && <AdSlot label="Anúncio superior" />}
 
       <ToolCards
         tools={tools}
@@ -92,15 +96,19 @@ export default function App() {
 
       <ToolWorkspace tool={activeTool} />
 
-      <AdSlot label="Anúncio após a ferramenta" />
+      {!isPremium && <AdSlot label="Anúncio após a ferramenta" />}
 
       <HowToUse />
 
       <Faq />
 
-      <AdSlot label="Anúncio no conteúdo" />
+      {!isPremium && <AdSlot label="Anúncio no conteúdo" />}
 
-      <PremiumSection />
+      <PremiumSection
+        session={session}
+        premiumStatus={premiumStatus}
+        onOpenAuth={setAuthModal}
+      />
 
       <LegalPages />
 

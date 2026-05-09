@@ -1,8 +1,13 @@
-export default function UserMenu({ session, onOpenAuth, onSignOut }) {
+export default function UserMenu({ session, premiumStatus, onOpenAuth, onSignOut }) {
   if (session?.user) {
     return (
       <div className="user-menu">
         <span>{session.user.email}</span>
+
+        <span className={premiumStatus?.isPremium ? "account-badge premium" : "account-badge"}>
+          {premiumStatus?.isPremium ? "Premium" : "Grátis"}
+        </span>
+
         <button onClick={onSignOut}>Sair</button>
       </div>
     );

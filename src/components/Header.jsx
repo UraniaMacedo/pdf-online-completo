@@ -1,7 +1,7 @@
 import { siteConfig } from "../config/siteConfig.js";
 import UserMenu from "./UserMenu.jsx";
 
-export default function Header({ session, onOpenAuth, onSignOut }) {
+export default function Header({ session, premiumStatus, onOpenAuth, onSignOut }) {
   return (
     <header className="hero">
       <nav className="topbar">
@@ -15,6 +15,7 @@ export default function Header({ session, onOpenAuth, onSignOut }) {
 
         <UserMenu
           session={session}
+          premiumStatus={premiumStatus}
           onOpenAuth={onOpenAuth}
           onSignOut={onSignOut}
         />

@@ -938,3 +938,20 @@ details p {
     flex: 1;
   }
 }
+
+.account-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: #ead8bd;
+  color: #5c3a1f;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.account-badge.premium {
+  background: #7b8b45;
+  color: #ffffff;
+}
