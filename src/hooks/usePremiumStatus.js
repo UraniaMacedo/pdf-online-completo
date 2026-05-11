@@ -1,69 +1,53 @@
-import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabaseClient.js";
+import { siteConfig } from "../config/siteConfig.js";
 
-export function usePremiumStatus(session) {
-  const [premiumStatus, setPremiumStatus] = useState({
-    loading: false,
-    isPremium: false,
-    plan: "free",
-    premiumUntil: null
-  });
+export default function PremiumSection({ session, premiumStatus, onOpenAuth }) {
+  
+  const handleCheckout = () => {
+  if (!session) {
+    onOpenAuth('signup'); 
+    return;
+  }
+  // Aqui está o seu link real!
+  window.location.href = "https://buy.stripe.com/7sYaEQ1iW9tu2sV84I00000";
+};
+  return (
+    <section className="premium-container" id="planos" style={{ padding: '60px 20px', backgroundColor: '#f9f9f9', borderRadius: '20px' }}>
+      <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+        <h2 style={{ fontSize: '2rem', color: '#333' }}>Conta PRO - PDF AGORA</h2>
+        <p style={{ color: '#666' }}>A solução profissional para os teus documentos.</p>
+      </div>
 
-  useEffect(() => {
-    let isActive = true;
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '25px', flexWrap: 'wrap' }}>
+        {/* Card Free */}
+        <div style={{ background: '#fff', padding: '30px', borderRadius: '15px', width: '280px', border: '1px solid #ddd' }}>
+          <h3>Plano Grátis</h3>
+          <div style={{ fontSize: '1.5rem', margin: '15px 0' }}>0€</div>
+          <ul style={{ listStyle: 'none', padding: 0, fontSize: '0.9rem', color: '#555' }}>
+            <li>✓ Ferramentas base</li>
+            <li>✓ Até 10MB</li>
+            <li>⚠ Com publicidade</li>
+          </ul>
+        </div>
 
-    async function loadPremiumStatus() {
-      if (!session?.user) {
-        setPremiumStatus({
-          loading: false,
-          isPremium: false,
-          plan: "free",
-          premiumUntil: null
-        });
-        return;
-      }
-
-      setPremiumStatus((current) => ({
-        ...current,
-        loading: true
-      }));
-
-      const { data, error } = await supabase
-        .from("user_subscriptions")
-        .select("is_premium, plan, premium_until")
-        .eq("user_id", session.user.id)
-        .maybeSingle();
-
-      if (!isActive) return;
-
-      if (error) {
-        console.error(error);
-        setPremiumStatus({
-          loading: false,
-          isPremium: false,
-          plan: "free",
-          premiumUntil: null
-        });
-        return;
-      }
-
-      const premiumUntil = data?.premium_until ? new Date(data.premium_until) : null;
-      const isStillValid = !premiumUntil || premiumUntil > new Date();
-
-      setPremiumStatus({
-        loading: false,
-        isPremium: Boolean(data?.is_premium) && isStillValid,
-        plan: data?.plan || "free",
-        premiumUntil: data?.premium_until || null
-      });
-    }
-
-    loadPremiumStatus();
-
-    return () => {
-      isActive = false;
-    };
-  }, [session]);
-
-  return premiumStatus;
+        {/* Card Premium */}
+        <div style={{ background: '#fff', padding: '30px', borderRadius: '15px', width: '300px', border: '2px solid #7b8b45', position: 'relative' }}>
+          <div style={{ position: 'absolute', top: '-12px', right: '15px', background: '#7b8b45', color: '#fff', padding: '2px 12px', borderRadius: '10px', fontSize: '0.7rem' }}>POPULAR</div>
+          <h3>Plano PRO</h3>
+          <div style={{ fontSize: '1.5rem', margin: '15px 0' }}>4,99€ <span style={{ fontSize: '0.8rem' }}>/mês</span></div>
+          <ul style={{ listStyle: 'none', padding: 0, fontSize: '0.9rem', lineHeight: '2' }}>
+            <li>✓ <strong>Sem anúncios</strong></li>
+            <li>✓ Arquivos até 100MB</li>
+            <li>✓ Velocidade prioritária</li>
+            <li>✓ Suporte em Português</li>
+          </ul>
+          <button 
+            onClick={handleCheckout}
+            style={{ width: '100%', padding: '12px', marginTop: '20px', borderRadius: '8px', border: 'none', backgroundColor: '#7b8b45', color: '#fff', fontWeight: 'bold', cursor: 'pointer' }}
+          >
+            Aderir ao PRO
+          </button>
+        </div>
+      </div>
+    </section>
+  );
 }
