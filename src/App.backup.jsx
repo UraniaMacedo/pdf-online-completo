@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Header from "./components/Header.jsx";
 import ToolCards from "./components/ToolCards.jsx";
 import ToolWorkspace from "./components/ToolWorkspace.jsx";
@@ -13,8 +13,6 @@ import { getToolById, tools } from "./data/tools.js";
 import { supabase } from "./lib/supabaseClient.js";
 import { usePremiumStatus } from "./hooks/usePremiumStatus.js";
 
-const ADSENSE_REVIEW_MODE = true;
-
 function getInitialToolId() {
   const path = window.location.pathname.replace("/", "");
   return tools.some((tool) => tool.id === path) ? path : "juntar-pdf";
@@ -28,8 +26,6 @@ export default function App() {
   const activeTool = useMemo(() => getToolById(activeToolId), [activeToolId]);
   const premiumStatus = usePremiumStatus(session);
   const isPremium = premiumStatus.isPremium;
-
-  const canShowAds = !ADSENSE_REVIEW_MODE && !isPremium;
 
   useEffect(() => {
     document.title = `${activeTool.seoTitle} | PDF AGORA`;
@@ -90,6 +86,8 @@ export default function App() {
         />
       )}
 
+      {!isPremium && <AdSlot label="Anúncio superior" />}
+
       <ToolCards
         tools={tools}
         activeToolId={activeToolId}
@@ -98,11 +96,13 @@ export default function App() {
 
       <ToolWorkspace tool={activeTool} />
 
+      {!isPremium && <AdSlot label="Anúncio após a ferramenta" />}
+
       <HowToUse />
 
       <Faq />
 
-      {canShowAds && <AdSlot label="Anúncio no conteúdo" />}
+      {!isPremium && <AdSlot label="Anúncio no conteúdo" />}
 
       <PremiumSection
         session={session}
