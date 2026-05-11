@@ -1,4 +1,4 @@
-export default function PremiumSection({ session, premiumStatus, onOpenAuth }) {
+export default function PremiumSection({ session, onOpenAuth }) {
   
   const handleCheckout = () => {
     if (!session) {
@@ -17,14 +17,14 @@ export default function PremiumSection({ session, premiumStatus, onOpenAuth }) {
 
       <div style={{ display: 'flex', justifyContent: 'center', gap: '25px', flexWrap: 'wrap', alignItems: 'stretch' }}>
         
-        {/* Card Free */}
+        {/* Card Grátis */}
         <div style={{ display: 'flex', flexDirection: 'column', background: '#fff', padding: '30px', borderRadius: '15px', width: '280px', border: '1px solid #ddd' }}>
-          <h3>Plano Grátis</h3>
-          <div style={{ fontSize: '1.5rem', margin: '15px 0' }}>0€</div>
+          <h3 style={{ marginBottom: '10px' }}>Plano Grátis</h3>
+          <div style={{ fontSize: '1.5rem', marginBottom: '20px' }}>0€</div>
           <ul style={{ listStyle: 'none', padding: 0, fontSize: '0.9rem', color: '#555', marginBottom: '20px' }}>
-            <li>✓ Ferramentas base</li>
-            <li>✓ Até 10MB</li>
-            <li>⚠ Com publicidade</li>
+            <li style={{ marginBottom: '10px' }}>✓ Ferramentas base</li>
+            <li style={{ marginBottom: '10px' }}>✓ Até 10MB</li>
+            <li style={{ marginBottom: '10px' }}>⚠ Com publicidade</li>
           </ul>
           <button 
             style={{ width: '100%', padding: '12px', marginTop: 'auto', borderRadius: '8px', border: '1px solid #ddd', backgroundColor: '#f1f1f1', color: '#666', fontWeight: 'bold' }}
@@ -37,13 +37,13 @@ export default function PremiumSection({ session, premiumStatus, onOpenAuth }) {
         {/* Card Premium */}
         <div style={{ display: 'flex', flexDirection: 'column', background: '#fff', padding: '30px', borderRadius: '15px', width: '300px', border: '2px solid #7b8b45', position: 'relative' }}>
           <div style={{ position: 'absolute', top: '-12px', right: '15px', background: '#7b8b45', color: '#fff', padding: '2px 12px', borderRadius: '10px', fontSize: '0.7rem', fontWeight: 'bold' }}>POPULAR</div>
-          <h3>Plano PRO</h3>
-          <div style={{ fontSize: '1.5rem', margin: '15px 0', color: '#7b8b45', fontWeight: 'bold' }}>1,99€ <span style={{ fontSize: '0.8rem', color: '#666', fontWeight: 'normal' }}>/mês</span></div>
-          <ul style={{ listStyle: 'none', padding: 0, fontSize: '0.9rem', lineHeight: '2', marginBottom: '20px' }}>
-            <li>✓ <strong>Sem anúncios</strong></li>
-            <li>✓ Arquivos até 100MB</li>
-            <li>✓ Velocidade prioritária</li>
-            <li>✓ Suporte em Português</li>
+          <h3 style={{ marginBottom: '10px' }}>Plano PRO</h3>
+          <div style={{ fontSize: '1.5rem', marginBottom: '20px', color: '#7b8b45', fontWeight: 'bold' }}>1,99€ <span style={{ fontSize: '0.8rem', color: '#666', fontWeight: 'normal' }}>/mês</span></div>
+          <ul style={{ listStyle: 'none', padding: 0, fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
+            <li style={{ marginBottom: '10px' }}>✓ <strong>Sem anúncios</strong></li>
+            <li style={{ marginBottom: '10px' }}>✓ Arquivos até 100MB</li>
+            <li style={{ marginBottom: '10px' }}>✓ Velocidade prioritária</li>
+            <li style={{ marginBottom: '10px' }}>✓ Suporte em Português</li>
           </ul>
           <button 
             onClick={handleCheckout}
