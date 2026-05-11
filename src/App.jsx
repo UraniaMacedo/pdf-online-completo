@@ -1,4 +1,5 @@
-﻿import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useState } from "react";
+// Importação de componentes - Verifique se os nomes dos arquivos estão idênticos na pasta components
 import Header from "./components/Header.jsx";
 import ToolCards from "./components/ToolCards.jsx";
 import ToolWorkspace from "./components/ToolWorkspace.jsx";
@@ -6,87 +7,78 @@ import AdSlot from "./components/AdSlot.jsx";
 import HowToUse from "./components/HowToUse.jsx";
 import Faq from "./components/Faq.jsx";
 import PremiumSection from "./components/PremiumSection.jsx";
-import LegalPages from "./components/LegalPages.jsx";
+import LegalPages from "./components/LegalPages.jsx"; // FUNDAMENTAL PARA O ADSENSE
 import Footer from "./components/Footer.jsx";
 import AuthModal from "./components/AuthModal.jsx";
-import { getToolById, tools } from "./data/tools.js";
+
+import { tools } from "./data/tools.js";
 import { supabase } from "./lib/supabaseClient.js";
 
-function getInitialToolId() {
-  if (typeof window === "undefined") return "juntar-pdf";
-  const path = window.location.pathname.replace("/", "");
-  return tools.some((tool) => tool.id === path) ? path : "juntar-pdf";
-}
-
 export default function App() {
-  const [activeToolId, setActiveToolId] = useState(getInitialToolId);
   const [session, setSession] = useState(null);
   const [authModal, setAuthModal] = useState(null);
+  const [currentTool, setCurrentTool] = useState("juntar-pdf");
 
-  const activeTool = useMemo(() => getToolById(activeToolId), [activeToolId]);
-
+  // Monitoramento da Sessão (Login)
   useEffect(() => {
-    document.title = `${activeTool.seoTitle} | PDF AGORA`;
-    const description = document.querySelector("meta[name='description']");
-    if (description) description.setAttribute("content", activeTool.seoDescription);
-  }, [activeTool]);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, currentSession) => {
-      setSession(currentSession);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
     });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
     return () => subscription.unsubscribe();
   }, []);
 
-  async function handleSignOut() {
+  const handleSignOut = async () => {
     await supabase.auth.signOut();
-  }
+  };
 
   return (
     <main className="page">
-      <Header
-        session={session}
-        onOpenAuth={setAuthModal}
-        onSignOut={handleSignOut}
+      {/* 1. Cabeçalho: Essencial para navegação do bot do AdSense */}
+      <Header 
+        session={session} 
+        onOpenAuth={setAuthModal} 
+        onSignOut={handleSignOut} 
       />
 
-      {authModal && (
-        <AuthModal
-          initialMode={authModal}
-          onClose={() => setAuthModal(null)}
-        />
-      )}
+      {/* 2. Área de Trabalho: Onde a ferramenta funciona */}
+      <div className="container" style={{ minHeight: '60vh', padding: '20px' }}>
+        <ToolWorkspace toolId={currentTool} session={session} />
+      </div>
 
-      <AdSlot label="Banner Superior" />
+      {/* 3. Grade de Ferramentas (Cards): O Google precisa ver conteúdo/funcionalidade */}
+      <section id="ferramentas">
+        <ToolCards onSelectTool={setCurrentTool} />
+      </section>
 
-      <ToolCards
-        tools={tools}
-        activeToolId={activeToolId}
-        onSelectTool={(id) => {
-          setActiveToolId(id);
-          window.history.pushState({}, "", id === "juntar-pdf" ? "/" : `/${id}`);
-        }}
-      />
+      {/* 4. Slot de Anúncios: Onde o AdSense vai aparecer após aprovado */}
+      <AdSlot />
 
-      <ToolWorkspace tool={activeTool} />
-      
+      {/* 5. Seção Premium: Aquela que você enviou antes */}
+      <PremiumSection session={session} onOpenAuth={setAuthModal} />
+
+      {/* 6. Conteúdo de SEO e Instruções: Fundamental para o AdSense entender o valor do site */}
       <HowToUse />
-
-      <AdSlot label="Anúncio Meio de Página" />
-
+      
+      {/* 7. FAQ: Ajuda na autoridade do domínio */}
       <Faq />
 
-      {/* Esta é a seção com os cartões alinhados e preço de 1,99€ */}
-      <PremiumSection
-        session={session}
-        onOpenAuth={setAuthModal}
-      />
-
-      {/* Este componente traz de volta o 'Sobre', 'Privacidade' e 'Termos' */}
+      {/* 8. Páginas Legais: SEM ISSO O ADSENSE REJEITA SEMPRE (Privacidade, Termos) */}
       <LegalPages />
 
       <Footer />
+
+      {/* Modais de Autenticação */}
+      {authModal && (
+        <AuthModal 
+          type={authModal} 
+          onClose={() => setAuthModal(null)} 
+        />
+      )}
     </main>
   );
 }

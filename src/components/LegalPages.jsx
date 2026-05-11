@@ -1,57 +1,42 @@
-export default function PremiumSection({ session, onOpenAuth }) {
-  const handleCheckout = () => {
-    if (!session) {
-      onOpenAuth('signup');
-      return;
-    }
-    window.location.href = "https://buy.stripe.com/7sYaEQ1iW9tu2sV84I00000";
-  };
+import React from 'react';
 
+export default function LegalPages() {
   return (
-    <section id="planos" style={{ padding: '60px 20px', backgroundColor: '#f9f9f9', borderRadius: '20px' }}>
-      <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-        <h2 style={{ fontSize: '2rem', color: '#333' }}>Conta PRO - PDF AGORA</h2>
-        <p style={{ color: '#666' }}>A solução profissional para os teus documentos.</p>
-      </div>
-
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '25px', flexWrap: 'wrap', alignItems: 'stretch' }}>
+    <section id="legal" style={{ padding: '40px 20px', backgroundColor: '#fff', color: '#333', fontSize: '0.9rem', lineHeight: '1.6' }}>
+      <div style={{ maxWidth: '900px', margin: '0 auto', borderTop: '1px solid #eee', paddingTop: '40px' }}>
         
-        {/* Card Grátis */}
-        <div style={{ display: 'flex', flexDirection: 'column', background: '#fff', padding: '30px', borderRadius: '15px', width: '280px', border: '1px solid #ddd' }}>
-          <h3 style={{ marginBottom: '10px' }}>Plano Grátis</h3>
-          <div style={{ fontSize: '1.5rem', marginBottom: '20px' }}>0€</div>
-          <ul style={{ listStyle: 'none', padding: 0, fontSize: '0.9rem', color: '#555', marginBottom: '20px' }}>
-            <li style={{ marginBottom: '10px' }}>✓ Ferramentas base</li>
-            <li style={{ marginBottom: '10px' }}>✓ Até 10MB</li>
-            <li style={{ marginBottom: '10px' }}>⚠ Com publicidade</li>
+        <div id="politica-privacidade" style={{ marginBottom: '40px' }}>
+          <h2 style={{ fontSize: '1.5rem', color: '#7b8b45' }}>Política de Privacidade</h2>
+          <p>O <strong>PDF AGORA</strong> valoriza a sua privacidade. Esta política descreve como tratamos seus dados:</p>
+          <ul>
+            <li><strong>Arquivos:</strong> Os arquivos enviados para processamento são armazenados temporariamente em nossos servidores apenas pelo tempo necessário para a conversão e são excluídos automaticamente após o download ou em até 1 hora.</li>
+            <li><strong>Cookies:</strong> Utilizamos cookies para melhorar a experiência do usuário e para fins de análise através do Google Analytics e Google AdSense.</li>
+            <li><strong>Segurança:</strong> Utilizamos conexões seguras (HTTPS) para garantir que seus documentos sejam transferidos com criptografia.</li>
           </ul>
-          <button 
-            style={{ width: '100%', padding: '12px', marginTop: 'auto', borderRadius: '8px', border: '1px solid #ddd', backgroundColor: '#f1f1f1', color: '#666', fontWeight: 'bold' }}
-            disabled
-          >
-            Plano Atual
-          </button>
         </div>
 
-        {/* Card Premium */}
-        <div style={{ display: 'flex', flexDirection: 'column', background: '#fff', padding: '30px', borderRadius: '15px', width: '300px', border: '2px solid #7b8b45', position: 'relative' }}>
-          <div style={{ position: 'absolute', top: '-12px', right: '15px', background: '#7b8b45', color: '#fff', padding: '2px 12px', borderRadius: '10px', fontSize: '0.7rem', fontWeight: 'bold' }}>POPULAR</div>
-          <h3 style={{ marginBottom: '10px' }}>Plano PRO</h3>
-          <div style={{ fontSize: '1.5rem', marginBottom: '20px', color: '#7b8b45', fontWeight: 'bold' }}>1,99€ <span style={{ fontSize: '0.8rem', color: '#666', fontWeight: 'normal' }}>/mês</span></div>
-          <ul style={{ listStyle: 'none', padding: 0, fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
-            <li style={{ marginBottom: '10px' }}>✓ <strong>Sem anúncios</strong></li>
-            <li style={{ marginBottom: '10px' }}>✓ Arquivos até 100MB</li>
-            <li style={{ marginBottom: '10px' }}>✓ Velocidade prioritária</li>
-            <li style={{ marginBottom: '10px' }}>✓ Suporte em Português</li>
+        <div id="termos-uso" style={{ marginBottom: '40px' }}>
+          <h2 style={{ fontSize: '1.5rem', color: '#7b8b45' }}>Termos de Uso</h2>
+          <p>Ao utilizar o PDF AGORA, você concorda com os seguintes termos:</p>
+          <ul>
+            <li>O serviço é fornecido "como está", sem garantias explícitas de disponibilidade ininterrupta.</li>
+            <li>É proibido utilizar a plataforma para processar arquivos com conteúdo ilegal, malicioso ou que infrinja direitos autorais.</li>
+            <li>O limite de tamanho para usuários gratuitos é de 10MB por arquivo.</li>
           </ul>
-          <button 
-            onClick={handleCheckout}
-            style={{ width: '100%', padding: '12px', marginTop: 'auto', borderRadius: '8px', border: 'none', backgroundColor: '#7b8b45', color: '#fff', fontWeight: 'bold', cursor: 'pointer' }}
-          >
-            Aderir ao PRO
-          </button>
         </div>
 
+        <div id="sobre" style={{ marginBottom: '40px' }}>
+          <h2 style={{ fontSize: '1.5rem', color: '#7b8b45' }}>Sobre o PDF AGORA</h2>
+          <p>
+            O PDF AGORA é uma ferramenta profissional desenvolvida para facilitar a gestão de documentos digitais. 
+            Nossa missão é oferecer agilidade e segurança para usuários que precisam juntar, dividir ou converter arquivos PDF de forma gratuita e eficiente.
+          </p>
+        </div>
+
+        <div style={{ textAlign: 'center', color: '#999', fontSize: '0.8rem' }}>
+          <p>© 2026 PDF AGORA - Todos os direitos reservados.</p>
+          <p>Contato: macedourania@gmail.com</p>
+        </div>
       </div>
     </section>
   );
