@@ -11,10 +11,6 @@ import Footer from "./components/Footer.jsx";
 import AuthModal from "./components/AuthModal.jsx";
 import { getToolById, tools } from "./data/tools.js";
 import { supabase } from "./lib/supabaseClient.js";
-// Importação que faltava para o site não ficar branco:
-import { usePremiumStatus } from "./hooks/usePremiumStatus.js";
-
-const ADSENSE_REVIEW_MODE = false;
 
 function getInitialToolId() {
   if (typeof window === "undefined") return "juntar-pdf";
@@ -28,54 +24,20 @@ export default function App() {
   const [authModal, setAuthModal] = useState(null);
 
   const activeTool = useMemo(() => getToolById(activeToolId), [activeToolId]);
-  
-  // Agora o sistema reconhece estas linhas:
-  const premiumStatus = usePremiumStatus(session);
-  const isPremium = premiumStatus?.isPremium || false;
-
-  const canShowAds = !isPremium;
 
   useEffect(() => {
     document.title = `${activeTool.seoTitle} | PDF AGORA`;
     const description = document.querySelector("meta[name='description']");
-    if (description) {
-      description.setAttribute("content", activeTool.seoDescription);
-    }
-
-    let canonical = document.querySelector("link[rel='canonical']");
-    if (!canonical) {
-      canonical = document.createElement("link");
-      canonical.setAttribute("rel", "canonical");
-      document.head.appendChild(canonical);
-    }
-    canonical.setAttribute("href", `https://www.pdfagora.com.br/${activeToolId === 'juntar-pdf' ? '' : activeToolId}`);
-  }, [activeTool, activeToolId]);
+    if (description) description.setAttribute("content", activeTool.seoDescription);
+  }, [activeTool]);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-    });
-
+    supabase.auth.getSession().then(({ data }) => setSession(data.session));
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, currentSession) => {
       setSession(currentSession);
     });
-
-    return () => {
-      subscription.unsubscribe();
-    };
+    return () => subscription.unsubscribe();
   }, []);
-
-  function handleSelectTool(toolId) {
-    setActiveToolId(toolId);
-    const nextUrl = toolId === "juntar-pdf" ? "/" : `/${toolId}`;
-    window.history.pushState({}, "", nextUrl);
-    setTimeout(() => {
-      document.querySelector(".upload-box")?.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
-    }, 50);
-  }
 
   async function handleSignOut() {
     await supabase.auth.signOut();
@@ -85,7 +47,6 @@ export default function App() {
     <main className="page">
       <Header
         session={session}
-        premiumStatus={premiumStatus}
         onOpenAuth={setAuthModal}
         onSignOut={handleSignOut}
       />
@@ -97,30 +58,28 @@ export default function App() {
         />
       )}
 
-      {canShowAds && <AdSlot label="Banner Superior" />}
+      <AdSlot label="Banner Superior" />
 
       <ToolCards
         tools={tools}
         activeToolId={activeToolId}
-        onSelectTool={handleSelectTool}
+        onSelectTool={(id) => {
+          setActiveToolId(id);
+          window.history.pushState({}, "", id === "juntar-pdf" ? "/" : `/${id}`);
+        }}
       />
 
       <ToolWorkspace tool={activeTool} />
-
       <HowToUse />
-
-      {canShowAds && <AdSlot label="Anúncio Meio de Página" />}
-
+      <AdSlot label="Anúncio Meio de Página" />
       <Faq />
 
-      {/* Chamada corrigida para o componente que limpamos antes */}
       <PremiumSection
         session={session}
         onOpenAuth={setAuthModal}
       />
 
       <LegalPages />
-
       <Footer />
     </main>
   );
