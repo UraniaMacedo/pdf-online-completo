@@ -1,52 +1,52 @@
-import { siteConfig } from "../config/siteConfig.js";
+export default function PremiumSection({ session, onOpenAuth }) {
+  const handleCheckout = () => {
+    if (!session) {
+      onOpenAuth('signup');
+      return;
+    }
+    window.location.href = "https://buy.stripe.com/7sYaEQ1iW9tu2sV84I00000";
+  };
 
-export default function LegalPages() {
   return (
-    <section className="legal-grid">
-      <article id="sobre">
-        <h2>Sobre o {siteConfig.name}</h2>
-        <p>
-          O {siteConfig.name} é uma plataforma multi-ferramentas dedicada à gestão e edição de documentos digitais. 
-          Nossa missão é democratizar o acesso a ferramentas de produtividade de alto nível, permitindo que estudantes, 
-          profissionais liberais e empresas gerenciem seus fluxos de trabalho em PDF de forma totalmente online, 
-          rápida e segura, sem a necessidade de instalação de softwares pesados ou licenças caras.
-        </p>
-      </article>
+    <section id="planos" style={{ padding: '60px 20px', backgroundColor: '#f9f9f9' }}>
+      <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+        <h2 style={{ fontSize: '2rem', color: '#333' }}>Planos PDF AGORA</h2>
+      </div>
 
-      <article id="contato">
-        <h2>Suporte e Contato</h2>
-        <p>
-          Valorizamos o feedback de nossos usuários. Se você encontrar qualquer problema técnico, tiver sugestões de 
-          melhoria ou desejar informações sobre parcerias e planos empresariais, nossa equipe está à disposição. 
-          Entre em contato diretamente pelo e-mail oficial: 
-          <strong> {siteConfig.contactEmail}</strong>. Respondemos em até 24 horas úteis.
-        </p>
-      </article>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', flexWrap: 'wrap', alignItems: 'stretch' }}>
+        
+        {/* Card Grátis */}
+        <div style={{ display: 'flex', flexDirection: 'column', background: '#fff', padding: '25px', borderRadius: '15px', width: '280px', border: '1px solid #ddd' }}>
+          <h3>Grátis</h3>
+          <div style={{ fontSize: '1.5rem', margin: '15px 0' }}>0€</div>
+          <ul style={{ listStyle: 'none', padding: 0, fontSize: '0.9rem', flexGrow: 1 }}>
+            <li>✓ Ferramentas base</li>
+            <li>✓ Até 10MB</li>
+            <li>⚠ Com anúncios</li>
+          </ul>
+          <button style={{ width: '100%', padding: '10px', marginTop: '20px', borderRadius: '8px', border: '1px solid #ccc', backgroundColor: '#eee', cursor: 'not-allowed' }} disabled>
+            Plano Atual
+          </button>
+        </div>
 
-      <article id="privacidade">
-        <h2>Política de Privacidade</h2>
-        <p>
-          A sua privacidade é nossa prioridade. Todos os arquivos enviados para o {siteConfig.name} são processados 
-          via criptografia SSL e removidos automaticamente de nossos servidores após a conclusão da tarefa. 
-          Não visualizamos, compartilhamos ou armazenamos o conteúdo dos seus documentos.
-        </p>
-        <p>
-          <strong>Cookies e Publicidade:</strong> Este site utiliza o Google AdSense para veicular anúncios. 
-          O Google utiliza cookies para exibir anúncios baseados em visitas anteriores do usuário. Você pode 
-          desativar a publicidade personalizada acessando as Configurações de Anúncios do Google.
-        </p>
-      </article>
+        {/* Card PRO */}
+        <div style={{ display: 'flex', flexDirection: 'column', background: '#fff', padding: '25px', borderRadius: '15px', width: '280px', border: '2px solid #7b8b45' }}>
+          <h3 style={{ color: '#7b8b45' }}>PRO</h3>
+          <div style={{ fontSize: '1.5rem', margin: '15px 0' }}>1,99€ <span style={{ fontSize: '0.8rem' }}>/mês</span></div>
+          <ul style={{ listStyle: 'none', padding: 0, fontSize: '0.9rem', flexGrow: 1 }}>
+            <li>✓ <strong>Sem anúncios</strong></li>
+            <li>✓ Até 100MB</li>
+            <li>✓ Prioridade total</li>
+          </ul>
+          <button 
+            onClick={handleCheckout}
+            style={{ width: '100%', padding: '10px', marginTop: '20px', borderRadius: '8px', border: 'none', backgroundColor: '#7b8b45', color: '#fff', fontWeight: 'bold', cursor: 'pointer' }}
+          >
+            Assinar PRO
+          </button>
+        </div>
 
-      <article id="termos">
-        <h2>Termos de Serviço</h2>
-        <p>
-          Ao utilizar o {siteConfig.name}, você concorda em cumprir estes termos. O serviço é fornecido "como está", 
-          como uma ferramenta de auxílio à produtividade. O usuário retém todos os direitos de propriedade intelectual 
-          sobre seus arquivos. Não nos responsabilizamos por perdas de dados decorrentes de falhas de conexão ou 
-          uso indevido das ferramentas. É proibido o uso da plataforma para processar arquivos que contenham 
-          conteúdo ilícito ou que violem direitos de terceiros.
-        </p>
-      </article>
+      </div>
     </section>
   );
 }
