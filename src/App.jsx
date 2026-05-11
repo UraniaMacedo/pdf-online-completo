@@ -11,7 +11,7 @@ import Footer from "./components/Footer.jsx";
 import AuthModal from "./components/AuthModal.jsx";
 import { getToolById, tools } from "./data/tools.js";
 import { supabase } from "./lib/supabaseClient.js";
-import { usePremiumStatus } from "./hooks/usePremiumStatus.js";
+
 
 // IMPORTANTE: Deixe como false para o Google ver os espaços de anúncios ativos durante a análise
 const ADSENSE_REVIEW_MODE = false;
