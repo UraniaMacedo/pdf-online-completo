@@ -14,7 +14,7 @@ import { supabase } from "./lib/supabaseClient.js";
 import { usePremiumStatus } from "./hooks/usePremiumStatus.js";
 
 
-// IMPORTANTE: Deixe como false para o Google ver os espa�os de an�ncios ativos durante a an�lise
+// IMPORTANTE: Deixe como false para o Google ver os espa os de an ncios ativos durante a an lise
 const ADSENSE_REVIEW_MODE = false;
 
 function getInitialToolId() {
@@ -31,11 +31,11 @@ export default function App() {
   const premiumStatus = usePremiumStatus(session);
   const isPremium = premiumStatus.isPremium;
 
-  // Se n�o for premium, mostra an�ncios para o Google validar o invent�rio
+  // Se n o for premium, mostra an ncios para o Google validar o invent rio
   const canShowAds = !isPremium;
 
   useEffect(() => {
-    // Atualiza o t�tulo e Meta Tags para SEO profissional
+    // Atualiza o t tulo e Meta Tags para SEO profissional
     document.title = `${activeTool.seoTitle} | PDF AGORA`;
     
     const description = document.querySelector("meta[name='description']");
@@ -43,7 +43,7 @@ export default function App() {
       description.setAttribute("content", activeTool.seoDescription);
     }
 
-    // Adiciona canonical link para evitar conte�do duplicado na an�lise
+    // Adiciona canonical link para evitar conte do duplicado na an lise
     let canonical = document.querySelector("link[rel='canonical']");
     if (!canonical) {
       canonical = document.createElement("link");
@@ -105,7 +105,7 @@ export default function App() {
         />
       )}
 
-      {/* An�ncio Topo para mostrar ao Google que o site � monetizado */}
+      {/* An ncio Topo para mostrar ao Google que o site   monetizado */}
       {canShowAds && <AdSlot label="Banner Superior" />}
 
       <ToolCards
@@ -116,22 +116,31 @@ export default function App() {
 
       <ToolWorkspace tool={activeTool} />
 
-      {/* Conte�do de alto valor para o AdSense ler */}
+      {/* Conte do de alto valor para o AdSense ler */}
       <HowToUse />
 
-      {canShowAds && <AdSlot label="An�ncio Meio de P�gina" />}
+      {canShowAds && <AdSlot label="Anúncio após a ferramenta" />}
 
-      <Faq />
+<HowToUse />
 
-      <PremiumSection
-        session={session}
-        premiumStatus={premiumStatus}
-        onOpenAuth={setAuthModal}
-      />
+{canShowAds && <AdSlot label="Anúncio no conteúdo" />}
 
-      <LegalPages />
+<Faq />
 
-      <Footer />
+<PremiumSection
+  session={session}
+  onOpenAuth={setAuthModal}
+  premiumStatus={premiumStatus}
+/>
+
+<LegalPages />
+
+<Footer />
+      {authModal && (
+        <AuthModal
+          onClose={() => setAuthModal(false)}
+        />
+      )}
     </main>
   );
 }
