@@ -70,16 +70,22 @@ export default function App() {
       />
 
       <ToolWorkspace tool={activeTool} />
+      
       <HowToUse />
+
       <AdSlot label="Anúncio Meio de Página" />
+
       <Faq />
 
+      {/* Esta é a seção com os cartões alinhados e preço de 1,99€ */}
       <PremiumSection
         session={session}
         onOpenAuth={setAuthModal}
       />
 
+      {/* Este componente traz de volta o 'Sobre', 'Privacidade' e 'Termos' */}
       <LegalPages />
+
       <Footer />
     </main>
   );
