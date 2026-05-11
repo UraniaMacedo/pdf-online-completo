@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import Header from "./components/Header.jsx";
 import ToolCards from "./components/ToolCards.jsx";
 import ToolWorkspace from "./components/ToolWorkspace.jsx";
@@ -9,48 +9,128 @@ import PremiumSection from "./components/PremiumSection.jsx";
 import LegalPages from "./components/LegalPages.jsx";
 import Footer from "./components/Footer.jsx";
 import AuthModal from "./components/AuthModal.jsx";
-import { tools } from "./data/tools.js";
+import { getToolById, tools } from "./data/tools.js";
 import { supabase } from "./lib/supabaseClient.js";
 
+
+// IMPORTANTE: Deixe como false para o Google ver os espaços de anúncios ativos durante a análise
+const ADSENSE_REVIEW_MODE = false;
+
+function getInitialToolId() {
+  const path = window.location.pathname.replace("/", "");
+  return tools.some((tool) => tool.id === path) ? path : "juntar-pdf";
+}
+
 export default function App() {
+  const [activeToolId, setActiveToolId] = useState(getInitialToolId);
   const [session, setSession] = useState(null);
   const [authModal, setAuthModal] = useState(null);
-  const [currentTool, setCurrentTool] = useState("juntar-pdf");
+
+  const activeTool = useMemo(() => getToolById(activeToolId), [activeToolId]);
+  const premiumStatus = usePremiumStatus(session);
+  const isPremium = premiumStatus.isPremium;
+
+  // Se não for premium, mostra anúncios para o Google validar o inventário
+  const canShowAds = !isPremium;
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
+    // Atualiza o título e Meta Tags para SEO profissional
+    document.title = `${activeTool.seoTitle} | PDF AGORA`;
+    
+    const description = document.querySelector("meta[name='description']");
+    if (description) {
+      description.setAttribute("content", activeTool.seoDescription);
+    }
+
+    // Adiciona canonical link para evitar conteúdo duplicado na análise
+    let canonical = document.querySelector("link[rel='canonical']");
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.setAttribute("rel", "canonical");
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute("href", `https://www.pdfagora.com.br/${activeToolId === 'juntar-pdf' ? '' : activeToolId}`);
+
+  }, [activeTool, activeToolId]);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
     });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
+
+    const {
+      data: { subscription }
+    } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+      setSession(currentSession);
     });
-    return () => subscription.unsubscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
+
+  function handleSelectTool(toolId) {
+    setActiveToolId(toolId);
+
+    const nextUrl = toolId === "juntar-pdf" ? "/" : `/${toolId}`;
+    window.history.pushState({}, "", nextUrl);
+
+    // Scroll suave para a ferramenta
+    setTimeout(() => {
+      document.querySelector(".upload-box")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }, 50);
+  }
+
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+  }
 
   return (
     <main className="page">
-      <Header session={session} onOpenAuth={setAuthModal} onSignOut={() => supabase.auth.signOut()} />
-      
-      <div className="container" style={{ minHeight: '50vh', padding: '20px' }}>
-        <ToolWorkspace toolId={currentTool} session={session} />
-      </div>
+      <Header
+        session={session}
+        premiumStatus={premiumStatus}
+        onOpenAuth={setAuthModal}
+        onSignOut={handleSignOut}
+      />
 
-      {/* OS CARDS QUE VOCÊ PRECISA PARA O ADSENSE */}
-      <ToolCards onSelectTool={setCurrentTool} />
-      
-      <AdSlot />
-      
-      {/* A SEÇÃO PREMIUM */}
-      <PremiumSection session={session} onOpenAuth={setAuthModal} />
-      
-      {/* CONTEÚDO PARA APROVAÇÃO */}
+      {authModal && (
+        <AuthModal
+          initialMode={authModal}
+          onClose={() => setAuthModal(null)}
+        />
+      )}
+
+      {/* Anúncio Topo para mostrar ao Google que o site é monetizado */}
+      {canShowAds && <AdSlot label="Banner Superior" />}
+
+      <ToolCards
+        tools={tools}
+        activeToolId={activeToolId}
+        onSelectTool={handleSelectTool}
+      />
+
+      <ToolWorkspace tool={activeTool} />
+
+      {/* Conteúdo de alto valor para o AdSense ler */}
       <HowToUse />
-      <Faq />
-      <LegalPages /> {/* Aqui estão suas políticas e termos */}
-      
-      <Footer />
 
-      {authModal && <AuthModal type={authModal} onClose={() => setAuthModal(null)} />}
+      {canShowAds && <AdSlot label="Anúncio Meio de Página" />}
+
+      <Faq />
+
+      <PremiumSection
+        session={session}
+        premiumStatus={premiumStatus}
+        onOpenAuth={setAuthModal}
+      />
+
+      <LegalPages />
+
+      <Footer />
     </main>
   );
 }
