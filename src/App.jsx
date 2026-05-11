@@ -13,7 +13,8 @@ import { getToolById, tools } from "./data/tools.js";
 import { supabase } from "./lib/supabaseClient.js";
 import { usePremiumStatus } from "./hooks/usePremiumStatus.js";
 
-const ADSENSE_REVIEW_MODE = true;
+// IMPORTANTE: Deixe como false para o Google ver os espaços de anúncios ativos durante a análise
+const ADSENSE_REVIEW_MODE = false;
 
 function getInitialToolId() {
   const path = window.location.pathname.replace("/", "");
@@ -29,16 +30,28 @@ export default function App() {
   const premiumStatus = usePremiumStatus(session);
   const isPremium = premiumStatus.isPremium;
 
-  const canShowAds = !ADSENSE_REVIEW_MODE && !isPremium;
+  // Se não for premium, mostra anúncios para o Google validar o inventário
+  const canShowAds = !isPremium;
 
   useEffect(() => {
+    // Atualiza o título e Meta Tags para SEO profissional
     document.title = `${activeTool.seoTitle} | PDF AGORA`;
-
+    
     const description = document.querySelector("meta[name='description']");
     if (description) {
       description.setAttribute("content", activeTool.seoDescription);
     }
-  }, [activeTool]);
+
+    // Adiciona canonical link para evitar conteúdo duplicado na análise
+    let canonical = document.querySelector("link[rel='canonical']");
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.setAttribute("rel", "canonical");
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute("href", `https://www.pdfagora.com.br/${activeToolId === 'juntar-pdf' ? '' : activeToolId}`);
+
+  }, [activeTool, activeToolId]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -62,6 +75,7 @@ export default function App() {
     const nextUrl = toolId === "juntar-pdf" ? "/" : `/${toolId}`;
     window.history.pushState({}, "", nextUrl);
 
+    // Scroll suave para a ferramenta
     setTimeout(() => {
       document.querySelector(".upload-box")?.scrollIntoView({
         behavior: "smooth",
@@ -90,6 +104,9 @@ export default function App() {
         />
       )}
 
+      {/* Anúncio Topo para mostrar ao Google que o site é monetizado */}
+      {canShowAds && <AdSlot label="Banner Superior" />}
+
       <ToolCards
         tools={tools}
         activeToolId={activeToolId}
@@ -98,11 +115,12 @@ export default function App() {
 
       <ToolWorkspace tool={activeTool} />
 
+      {/* Conteúdo de alto valor para o AdSense ler */}
       <HowToUse />
 
-      <Faq />
+      {canShowAds && <AdSlot label="Anúncio Meio de Página" />}
 
-      {canShowAds && <AdSlot label="Anúncio no conteúdo" />}
+      <Faq />
 
       <PremiumSection
         session={session}
