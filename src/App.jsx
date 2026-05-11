@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Header from "./components/Header.jsx";
 import ToolCards from "./components/ToolCards.jsx";
 import ToolWorkspace from "./components/ToolWorkspace.jsx";
@@ -11,9 +11,10 @@ import Footer from "./components/Footer.jsx";
 import AuthModal from "./components/AuthModal.jsx";
 import { getToolById, tools } from "./data/tools.js";
 import { supabase } from "./lib/supabaseClient.js";
+import { usePremiumStatus } from "./hooks/usePremiumStatus.js";
 
 
-// IMPORTANTE: Deixe como false para o Google ver os espaços de anúncios ativos durante a análise
+// IMPORTANTE: Deixe como false para o Google ver os espa�os de an�ncios ativos durante a an�lise
 const ADSENSE_REVIEW_MODE = false;
 
 function getInitialToolId() {
@@ -30,11 +31,11 @@ export default function App() {
   const premiumStatus = usePremiumStatus(session);
   const isPremium = premiumStatus.isPremium;
 
-  // Se não for premium, mostra anúncios para o Google validar o inventário
+  // Se n�o for premium, mostra an�ncios para o Google validar o invent�rio
   const canShowAds = !isPremium;
 
   useEffect(() => {
-    // Atualiza o título e Meta Tags para SEO profissional
+    // Atualiza o t�tulo e Meta Tags para SEO profissional
     document.title = `${activeTool.seoTitle} | PDF AGORA`;
     
     const description = document.querySelector("meta[name='description']");
@@ -42,7 +43,7 @@ export default function App() {
       description.setAttribute("content", activeTool.seoDescription);
     }
 
-    // Adiciona canonical link para evitar conteúdo duplicado na análise
+    // Adiciona canonical link para evitar conte�do duplicado na an�lise
     let canonical = document.querySelector("link[rel='canonical']");
     if (!canonical) {
       canonical = document.createElement("link");
@@ -104,7 +105,7 @@ export default function App() {
         />
       )}
 
-      {/* Anúncio Topo para mostrar ao Google que o site é monetizado */}
+      {/* An�ncio Topo para mostrar ao Google que o site � monetizado */}
       {canShowAds && <AdSlot label="Banner Superior" />}
 
       <ToolCards
@@ -115,10 +116,10 @@ export default function App() {
 
       <ToolWorkspace tool={activeTool} />
 
-      {/* Conteúdo de alto valor para o AdSense ler */}
+      {/* Conte�do de alto valor para o AdSense ler */}
       <HowToUse />
 
-      {canShowAds && <AdSlot label="Anúncio Meio de Página" />}
+      {canShowAds && <AdSlot label="An�ncio Meio de P�gina" />}
 
       <Faq />
 
