@@ -5,7 +5,6 @@ import ToolWorkspace from "./components/ToolWorkspace.jsx";
 import AdSlot from "./components/AdSlot.jsx";
 import HowToUse from "./components/HowToUse.jsx";
 import Faq from "./components/Faq.jsx";
-import PremiumSection from "./components/PremiumSection.jsx";
 import LegalPages from "./components/LegalPages.jsx";
 import Footer from "./components/Footer.jsx";
 import AuthModal from "./components/AuthModal.jsx";
@@ -54,7 +53,9 @@ export default function App() {
 
     canonical.setAttribute(
       "href",
-      `https://www.pdfagora.com.br/${activeToolId === "juntar-pdf" ? "" : activeToolId}`
+      `https://www.pdfagora.com.br/${
+        activeToolId === "juntar-pdf" ? "" : activeToolId
+      }`
     );
   }, [activeTool, activeToolId]);
 
@@ -118,12 +119,6 @@ export default function App() {
       {canShowAds && <AdSlot label="Anúncio no conteúdo" />}
 
       <Faq />
-
-      <PremiumSection
-        session={session}
-        onOpenAuth={setAuthModal}
-        premiumStatus={premiumStatus}
-      />
 
       <LegalPages />
 
