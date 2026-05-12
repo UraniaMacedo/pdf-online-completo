@@ -396,7 +396,7 @@ export default function LegalPages() {
           </p>
 
           <p style={styles.contactEmail}>
-            <a href="mailto:contato@pdfagora.com.br">
+            <a href="macedourania@gmail.com">
               contato@pdfagora.com.br
             </a>
           </p>
