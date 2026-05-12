@@ -33,11 +33,15 @@ export default function LegalPages() {
       <div style={styles.container}>
         <nav style={styles.nav}>
           <a href="#sobre" style={styles.navLink}>Sobre</a>
+          <a href="#como-funciona" style={styles.navLink}>Como funciona</a>
+          <a href="#planos" style={styles.navLink}>Planos Premium</a>
           <a href="#recursos" style={styles.navLink}>Recursos</a>
-          <a href="#planos" style={styles.navLink}>Planos</a>
+          <a href="#seguranca" style={styles.navLink}>Segurança</a>
           <a href="#privacidade" style={styles.navLink}>Privacidade</a>
           <a href="#cookies" style={styles.navLink}>Cookies</a>
           <a href="#termos" style={styles.navLink}>Termos</a>
+          <a href="#transparencia" style={styles.navLink}>Transparência</a>
+          <a href="#faq-institucional" style={styles.navLink}>Perguntas frequentes</a>
           <a href="#contato" style={styles.navLink}>Contato</a>
         </nav>
 
@@ -85,25 +89,6 @@ export default function LegalPages() {
           </div>
         </section>
 
-        <section id="recursos" style={styles.section}>
-          <h2 style={styles.title}>Recursos disponíveis</h2>
-
-          <p style={styles.paragraph}>
-            O PDF AGORA reúne ferramentas úteis para quem trabalha com documentos
-            digitais. A ideia é tornar o processo mais simples para usuários que
-            precisam preparar arquivos para envio, organização ou compartilhamento.
-          </p>
-
-          <div style={styles.featureGrid}>
-            {tools.map((item) => (
-              <div key={item.title} style={styles.featureCard}>
-                <h3>{item.title}</h3>
-                <p>{item.text}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
         <section id="como-funciona" style={styles.section}>
           <h2 style={styles.title}>Como funciona</h2>
 
@@ -130,33 +115,9 @@ export default function LegalPages() {
           </div>
         </section>
 
-        <section id="seguranca" style={styles.section}>
-          <h2 style={styles.title}>Segurança e responsabilidade</h2>
-
-          <p style={styles.paragraph}>
-            O PDF AGORA busca oferecer uma experiência segura, clara e confiável.
-            Ainda assim, o usuário deve avaliar o tipo de documento que envia e
-            evitar o uso de arquivos extremamente sensíveis quando não houver
-            necessidade.
-          </p>
-
-          <p style={styles.paragraph}>
-            Documentos com dados pessoais, informações bancárias, contratos,
-            documentos oficiais, prontuários, processos ou informações sigilosas
-            devem ser tratados com cuidado. O usuário é responsável por verificar
-            se possui autorização para usar, editar ou compartilhar os arquivos.
-          </p>
-
-          <div style={styles.notice}>
-            <strong>Recomendação:</strong> sempre confira o arquivo final antes
-            de enviar para terceiros, clientes, empresas, órgãos públicos ou
-            instituições de ensino.
-          </div>
-        </section>
-
         <section id="planos" style={styles.section}>
           <span style={styles.badge}>Conta PRO</span>
-          <h2 style={styles.title}>Planos do PDF AGORA</h2>
+          <h2 style={styles.title}>Planos Premium do PDF AGORA</h2>
 
           <p style={styles.paragraph}>
             O PDF AGORA pode ser utilizado gratuitamente com anúncios. Também
@@ -193,6 +154,49 @@ export default function LegalPages() {
                 de contato durante esta fase inicial.
               </p>
             </div>
+          </div>
+        </section>
+
+        <section id="recursos" style={styles.section}>
+          <h2 style={styles.title}>Recursos disponíveis</h2>
+
+          <p style={styles.paragraph}>
+            O PDF AGORA reúne ferramentas úteis para quem trabalha com documentos
+            digitais. A ideia é tornar o processo mais simples para usuários que
+            precisam preparar arquivos para envio, organização ou compartilhamento.
+          </p>
+
+          <div style={styles.featureGrid}>
+            {tools.map((item) => (
+              <div key={item.title} style={styles.featureCard}>
+                <h3>{item.title}</h3>
+                <p>{item.text}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section id="seguranca" style={styles.section}>
+          <h2 style={styles.title}>Segurança e responsabilidade</h2>
+
+          <p style={styles.paragraph}>
+            O PDF AGORA busca oferecer uma experiência segura, clara e confiável.
+            Ainda assim, o usuário deve avaliar o tipo de documento que envia e
+            evitar o uso de arquivos extremamente sensíveis quando não houver
+            necessidade.
+          </p>
+
+          <p style={styles.paragraph}>
+            Documentos com dados pessoais, informações bancárias, contratos,
+            documentos oficiais, prontuários, processos ou informações sigilosas
+            devem ser tratados com cuidado. O usuário é responsável por verificar
+            se possui autorização para usar, editar ou compartilhar os arquivos.
+          </p>
+
+          <div style={styles.notice}>
+            <strong>Recomendação:</strong> sempre confira o arquivo final antes
+            de enviar para terceiros, clientes, empresas, órgãos públicos ou
+            instituições de ensino.
           </div>
         </section>
 
@@ -396,8 +400,8 @@ export default function LegalPages() {
           </p>
 
           <p style={styles.contactEmail}>
-            <a href="macedourania@gmail.com">
-              contato@pdfagora.com.br
+            <a href="mailto:macedourania@gmail.com">
+              macedourania@gmail.com
             </a>
           </p>
 
