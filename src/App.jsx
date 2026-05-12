@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import Header from "./components/Header.jsx";
 import ToolCards from "./components/ToolCards.jsx";
 import ToolWorkspace from "./components/ToolWorkspace.jsx";
@@ -120,7 +120,10 @@ export default function App() {
 
       <Faq />
 
-      <LegalPages />
+     <LegalPages
+  session={session}
+  onOpenAuth={setAuthModal}
+/>
 
       <Footer />
 

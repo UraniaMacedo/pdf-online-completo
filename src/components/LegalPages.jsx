@@ -1,5 +1,17 @@
-export default function LegalPages() {
+export default function LegalPages({ session, onOpenAuth }) {
   const updatedAt = "12/05/2026";
+  const STRIPE_PAYMENT_LINK = "https://buy.stripe.com/7sYaEQ1iW9tu2sV84I00000";
+
+  function handlePremiumClick() {
+    if (!session) {
+      if (typeof onOpenAuth === "function") {
+        onOpenAuth("login");
+      }
+      return;
+    }
+
+    window.location.href = STRIPE_PAYMENT_LINK;
+  }
 
   const tools = [
     {
@@ -140,19 +152,30 @@ export default function LegalPages() {
             <div style={styles.proCard}>
               <span style={styles.popular}>POPULAR</span>
               <h3>Plano PRO</h3>
+
               <div style={styles.proPrice}>
                 1,99€ <span style={styles.month}>/mês</span>
               </div>
+
               <ul style={styles.list}>
                 <li>Experiência sem anúncios na conta PRO</li>
                 <li>Navegação mais limpa</li>
                 <li>Conta identificada por e-mail</li>
                 <li>Preparado para novos recursos premium</li>
               </ul>
+
               <p style={styles.smallText}>
-                A ativação da Conta PRO pode ser solicitada pelo canal oficial
-                de contato durante esta fase inicial.
+                Para assinar, faça login na sua conta e continue para o pagamento
+                seguro pelo Stripe.
               </p>
+
+              <button
+                type="button"
+                onClick={handlePremiumClick}
+                style={styles.proButton}
+              >
+                Assinar Plano PRO
+              </button>
             </div>
           </div>
         </section>
@@ -575,6 +598,18 @@ const styles = {
     fontSize: "0.95rem",
     lineHeight: "1.7",
     marginTop: "18px"
+  },
+  proButton: {
+    width: "100%",
+    marginTop: "18px",
+    padding: "14px 18px",
+    border: "none",
+    borderRadius: "14px",
+    backgroundColor: "#7b8b45",
+    color: "#ffffff",
+    fontWeight: "800",
+    fontSize: "1rem",
+    cursor: "pointer"
   },
   faqItem: {
     borderBottom: "1px solid #e5e7eb",
