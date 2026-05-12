@@ -13,11 +13,13 @@ import { getToolById, tools } from "./data/tools.js";
 import { supabase } from "./lib/supabaseClient.js";
 import { usePremiumStatus } from "./hooks/usePremiumStatus.js";
 
-
-// IMPORTANTE: Deixe como false para o Google ver os espa os de an ncios ativos durante a an lise
+// IMPORTANTE: deixe como false para o sistema respeitar usuários premium.
+// Se precisar forçar anúncios durante revisão do Google, altere para true.
 const ADSENSE_REVIEW_MODE = false;
 
 function getInitialToolId() {
+  if (typeof window === "undefined") return "juntar-pdf";
+
   const path = window.location.pathname.replace("/", "");
   return tools.some((tool) => tool.id === path) ? path : "juntar-pdf";
 }
@@ -31,27 +33,29 @@ export default function App() {
   const premiumStatus = usePremiumStatus(session);
   const isPremium = premiumStatus.isPremium;
 
-  // Se n o for premium, mostra an ncios para o Google validar o invent rio
-  const canShowAds = !isPremium;
+  const canShowAds = ADSENSE_REVIEW_MODE || !isPremium;
 
   useEffect(() => {
-    // Atualiza o t tulo e Meta Tags para SEO profissional
+    if (!activeTool) return;
+
     document.title = `${activeTool.seoTitle} | PDF AGORA`;
-    
+
     const description = document.querySelector("meta[name='description']");
     if (description) {
       description.setAttribute("content", activeTool.seoDescription);
     }
 
-    // Adiciona canonical link para evitar conte do duplicado na an lise
     let canonical = document.querySelector("link[rel='canonical']");
     if (!canonical) {
       canonical = document.createElement("link");
       canonical.setAttribute("rel", "canonical");
       document.head.appendChild(canonical);
     }
-    canonical.setAttribute("href", `https://www.pdfagora.com.br/${activeToolId === 'juntar-pdf' ? '' : activeToolId}`);
 
+    canonical.setAttribute(
+      "href",
+      `https://www.pdfagora.com.br/${activeToolId === "juntar-pdf" ? "" : activeToolId}`
+    );
   }, [activeTool, activeToolId]);
 
   useEffect(() => {
@@ -76,7 +80,6 @@ export default function App() {
     const nextUrl = toolId === "juntar-pdf" ? "/" : `/${toolId}`;
     window.history.pushState({}, "", nextUrl);
 
-    // Scroll suave para a ferramenta
     setTimeout(() => {
       document.querySelector(".upload-box")?.scrollIntoView({
         behavior: "smooth",
@@ -98,14 +101,6 @@ export default function App() {
         onSignOut={handleSignOut}
       />
 
-      {authModal && (
-        <AuthModal
-          initialMode={authModal}
-          onClose={() => setAuthModal(null)}
-        />
-      )}
-
-      {/* An ncio Topo para mostrar ao Google que o site   monetizado */}
       {canShowAds && <AdSlot label="Banner Superior" />}
 
       <ToolCards
@@ -116,29 +111,28 @@ export default function App() {
 
       <ToolWorkspace tool={activeTool} />
 
-      {/* Conte do de alto valor para o AdSense ler */}
-      <HowToUse />
-
       {canShowAds && <AdSlot label="Anúncio após a ferramenta" />}
 
-<HowToUse />
+      <HowToUse />
 
-{canShowAds && <AdSlot label="Anúncio no conteúdo" />}
+      {canShowAds && <AdSlot label="Anúncio no conteúdo" />}
 
-<Faq />
+      <Faq />
 
-<PremiumSection
-  session={session}
-  onOpenAuth={setAuthModal}
-  premiumStatus={premiumStatus}
-/>
+      <PremiumSection
+        session={session}
+        onOpenAuth={setAuthModal}
+        premiumStatus={premiumStatus}
+      />
 
-<LegalPages />
+      <LegalPages />
 
-<Footer />
+      <Footer />
+
       {authModal && (
         <AuthModal
-          onClose={() => setAuthModal(false)}
+          initialMode={authModal}
+          onClose={() => setAuthModal(null)}
         />
       )}
     </main>
