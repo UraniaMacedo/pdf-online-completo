@@ -10,22 +10,67 @@ export default function ImageToPdfTool() {
   const [downloadUrl, setDownloadUrl] = useState("");
   const [fileName, setFileName] = useState("imagens-convertidas.pdf");
   const [loading, setLoading] = useState(false);
+  const [statusMessage, setStatusMessage] = useState("");
+  const [statusType, setStatusType] = useState("");
+
+  function clearResult() {
+    setDownloadUrl("");
+    setStatusMessage("");
+    setStatusType("");
+  }
+
+  function getStatusStyle() {
+    const baseStyle = {
+      margin: "16px 0",
+      padding: "14px 16px",
+      borderRadius: "14px",
+      fontSize: "0.95rem",
+      fontWeight: "700",
+      lineHeight: "1.5"
+    };
+
+    if (statusType === "success") {
+      return {
+        ...baseStyle,
+        background: "#ecfdf3",
+        color: "#166534",
+        border: "1px solid #bbf7d0"
+      };
+    }
+
+    if (statusType === "error") {
+      return {
+        ...baseStyle,
+        background: "#fef2f2",
+        color: "#991b1b",
+        border: "1px solid #fecaca"
+      };
+    }
+
+    return {
+      ...baseStyle,
+      background: "#eff6ff",
+      color: "#1d4ed8",
+      border: "1px solid #bfdbfe"
+    };
+  }
 
   function handleFiles(selectedFiles) {
     const imageFiles = filterImageFiles(selectedFiles);
 
     if (imageFiles.length === 0) {
-      alert("Envie imagens JPG ou PNG.");
+      setStatusType("error");
+      setStatusMessage("Envie imagens válidas nos formatos JPG ou PNG.");
       return;
     }
 
     setFiles((prev) => [...prev, ...imageFiles]);
-    setDownloadUrl("");
+    clearResult();
   }
 
   function removeFile(index) {
     setFiles((prev) => prev.filter((_, i) => i !== index));
-    setDownloadUrl("");
+    clearResult();
   }
 
   function moveFile(index, direction) {
@@ -40,22 +85,37 @@ export default function ImageToPdfTool() {
     ];
 
     setFiles(newFiles);
-    setDownloadUrl("");
+    clearResult();
   }
 
   async function processFiles() {
     if (files.length === 0) {
-      alert("Envie pelo menos uma imagem.");
+      setStatusType("error");
+      setStatusMessage("Envie pelo menos uma imagem antes de converter.");
       return;
     }
 
     try {
       setLoading(true);
+      setDownloadUrl("");
+      setStatusType("info");
+      setStatusMessage("Convertendo suas imagens para PDF...");
+
       const blob = await imageFilesToPdf(files);
-      setDownloadUrl(createDownloadUrl(blob));
+      const url = createDownloadUrl(blob);
+
+      setDownloadUrl(url);
+      setStatusType("success");
+      setStatusMessage(
+        "Conversão realizada com sucesso! Seu PDF está pronto para download."
+      );
     } catch (error) {
       console.error(error);
-      alert("Erro ao converter imagens para PDF.");
+      setDownloadUrl("");
+      setStatusType("error");
+      setStatusMessage(
+        "Não foi possível converter as imagens. Verifique os arquivos selecionados e tente novamente."
+      );
     } finally {
       setLoading(false);
     }
@@ -75,14 +135,34 @@ export default function ImageToPdfTool() {
 
       <div className="output-name">
         <label>Nome do arquivo final</label>
-        <input value={fileName} onChange={(event) => setFileName(event.target.value)} />
+        <input
+          value={fileName}
+          onChange={(event) => setFileName(event.target.value)}
+          placeholder="imagens-convertidas.pdf"
+        />
       </div>
 
-      <button className="primary-button" onClick={processFiles} disabled={loading}>
+      {statusMessage && (
+        <div style={getStatusStyle()}>
+          {statusMessage}
+        </div>
+      )}
+
+      <button
+        className="primary-button"
+        onClick={processFiles}
+        disabled={loading}
+      >
         {loading ? "Convertendo..." : "Converter imagem para PDF"}
       </button>
 
-      <DownloadResult url={downloadUrl} fileName={fileName} label="Baixar PDF" />
+      {downloadUrl && (
+        <DownloadResult
+          url={downloadUrl}
+          fileName={fileName}
+          label="Baixar PDF"
+        />
+      )}
     </>
   );
 }
