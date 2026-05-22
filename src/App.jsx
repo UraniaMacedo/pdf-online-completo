@@ -114,16 +114,35 @@ export default function App() {
 
       {canShowAds && <AdSlot label="Anúncio após a ferramenta" />}
 
+      <Header
+        session={session}
+        premiumStatus={premiumStatus}
+        onOpenAuth={setAuthModal}
+        onSignOut={handleSignOut}
+      />
+
+      {canShowAds && <AdSlot label="Banner Superior" />}
+
+      <ToolCards
+        tools={tools}
+        activeToolId={activeToolId}
+        onSelectTool={handleSelectTool}
+      />
+
+      <ToolWorkspace tool={activeTool} />
+
+      {canShowAds && <AdSlot label="Anúncio após a ferramenta" />}
+
       <HowToUse />
 
       {canShowAds && <AdSlot label="Anúncio no conteúdo" />}
 
       <Faq />
 
-     <LegalPages
-  session={session}
-  onOpenAuth={setAuthModal}
-/>
+      <LegalPages
+        session={session}
+        onOpenAuth={setAuthModal}
+      />
 
       <Footer />
 
