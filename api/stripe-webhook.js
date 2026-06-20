@@ -1,22 +1,26 @@
 const Stripe = require("stripe");
 const { createClient } = require("@supabase/supabase-js");
 
-function getRequiredEnv(name) {
+function getEnv(name) {
   const value = process.env[name];
 
   if (!value) {
-    throw new Error(`Variável de ambiente ausente: ${name}`);
+    throw new Error(`Variável de ambiente ausente na Vercel: ${name}`);
   }
 
   return value;
 }
 
-const stripe = new Stripe(getRequiredEnv("STRIPE_SECRET_KEY"));
+function getStripe() {
+  return new Stripe(getEnv("STRIPE_SECRET_KEY"));
+}
 
-const supabaseAdmin = createClient(
-  getRequiredEnv("SUPABASE_URL"),
-  getRequiredEnv("SUPABASE_SERVICE_ROLE_KEY")
-);
+function getSupabaseAdmin() {
+  return createClient(
+    getEnv("SUPABASE_URL"),
+    getEnv("SUPABASE_SERVICE_ROLE_KEY")
+  );
+}
 
 async function readRawBody(req) {
   const chunks = [];
@@ -64,7 +68,7 @@ function getPremiumStatusFromStripeStatus(stripeStatus) {
   return stripeStatus || "unknown";
 }
 
-async function savePremiumSubscription(session) {
+async function savePremiumSubscription(supabaseAdmin, session) {
   const email = session.customer_details?.email || session.customer_email;
 
   if (!email) {
@@ -108,7 +112,7 @@ async function savePremiumSubscription(session) {
   });
 }
 
-async function updateSubscription(subscription) {
+async function updateSubscription(supabaseAdmin, subscription) {
   const stripeCustomerId =
     typeof subscription.customer === "string" ? subscription.customer : null;
 
@@ -144,7 +148,7 @@ async function updateSubscription(subscription) {
   });
 }
 
-async function cancelSubscription(subscription) {
+async function cancelSubscription(supabaseAdmin, subscription) {
   const stripeCustomerId =
     typeof subscription.customer === "string" ? subscription.customer : null;
 
@@ -187,6 +191,20 @@ module.exports = async function handler(req, res) {
     });
   }
 
+  let stripe;
+  let supabaseAdmin;
+
+  try {
+    stripe = getStripe();
+    supabaseAdmin = getSupabaseAdmin();
+  } catch (error) {
+    console.error("Erro de configuração do webhook:", error.message);
+
+    return res.status(500).json({
+      error: "Webhook configuration error"
+    });
+  }
+
   let event;
 
   try {
@@ -195,7 +213,7 @@ module.exports = async function handler(req, res) {
     event = stripe.webhooks.constructEvent(
       rawBody,
       signature,
-      getRequiredEnv("STRIPE_WEBHOOK_SECRET")
+      getEnv("STRIPE_WEBHOOK_SECRET")
     );
   } catch (error) {
     console.error("Erro ao validar assinatura do Stripe:", error.message);
@@ -208,22 +226,22 @@ module.exports = async function handler(req, res) {
   try {
     switch (event.type) {
       case "checkout.session.completed": {
-        await savePremiumSubscription(event.data.object);
+        await savePremiumSubscription(supabaseAdmin, event.data.object);
         break;
       }
 
       case "customer.subscription.created": {
-        await updateSubscription(event.data.object);
+        await updateSubscription(supabaseAdmin, event.data.object);
         break;
       }
 
       case "customer.subscription.updated": {
-        await updateSubscription(event.data.object);
+        await updateSubscription(supabaseAdmin, event.data.object);
         break;
       }
 
       case "customer.subscription.deleted": {
-        await cancelSubscription(event.data.object);
+        await cancelSubscription(supabaseAdmin, event.data.object);
         break;
       }
 
