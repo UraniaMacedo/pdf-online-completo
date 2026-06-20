@@ -16,17 +16,63 @@ import { usePremiumStatus } from "./hooks/usePremiumStatus.js";
 // Se precisar forçar anúncios durante revisão do Google, altere para true.
 const ADSENSE_REVIEW_MODE = false;
 
-function getInitialToolId() {
-  if (typeof window === "undefined") return "juntar-pdf";
+// Depois que criar blocos de anúncio no AdSense, coloque os IDs aqui.
+// Exemplo: top: "1234567890"
+// Se você usar apenas Anúncios Automáticos, pode deixar vazio.
+const AD_SLOTS = {
+  top: "",
+  afterTool: "",
+  content: ""
+};
 
-  const path = window.location.pathname.replace("/", "");
-  return tools.some((tool) => tool.id === path) ? path : "juntar-pdf";
+const SITE_URL = "https://www.pdfagora.com.br";
+
+const SPECIAL_PAGES = {
+  planos: {
+    title: "Planos PDF AGORA | Assinatura mensal e anual",
+    description:
+      "Conheça os planos do PDF AGORA. Use ferramentas PDF grátis com anúncios ou assine o Plano PRO mensal ou anual para remover anúncios.",
+    canonicalPath: "/planos",
+    sectionId: "planos"
+  }
+};
+
+function getCurrentPath() {
+  if (typeof window === "undefined") return "";
+
+  return window.location.pathname.replace(/^\/+|\/+$/g, "");
+}
+
+function getInitialRoute() {
+  const path = getCurrentPath();
+
+  if (SPECIAL_PAGES[path]) {
+    return {
+      activeToolId: "juntar-pdf",
+      activePageId: path
+    };
+  }
+
+  if (tools.some((tool) => tool.id === path)) {
+    return {
+      activeToolId: path,
+      activePageId: null
+    };
+  }
+
+  return {
+    activeToolId: "juntar-pdf",
+    activePageId: null
+  };
 }
 
 export default function App() {
-  const [activeToolId, setActiveToolId] = useState(getInitialToolId);
+  const [route, setRoute] = useState(getInitialRoute);
   const [session, setSession] = useState(null);
   const [authModal, setAuthModal] = useState(null);
+
+  const activeToolId = route.activeToolId;
+  const activePageId = route.activePageId;
 
   const activeTool = useMemo(() => getToolById(activeToolId), [activeToolId]);
   const premiumStatus = usePremiumStatus(session);
@@ -37,11 +83,25 @@ export default function App() {
   useEffect(() => {
     if (!activeTool) return;
 
-    document.title = `${activeTool.seoTitle} | PDF AGORA`;
+    const specialPage = activePageId ? SPECIAL_PAGES[activePageId] : null;
+
+    const pageTitle = specialPage
+      ? specialPage.title
+      : `${activeTool.seoTitle} | PDF AGORA`;
+
+    const pageDescription = specialPage
+      ? specialPage.description
+      : activeTool.seoDescription;
+
+    const canonicalUrl = specialPage
+      ? `${SITE_URL}${specialPage.canonicalPath}`
+      : `${SITE_URL}/${activeToolId === "juntar-pdf" ? "" : activeToolId}`;
+
+    document.title = pageTitle;
 
     const description = document.querySelector("meta[name='description']");
     if (description) {
-      description.setAttribute("content", activeTool.seoDescription);
+      description.setAttribute("content", pageDescription);
     }
 
     let canonical = document.querySelector("link[rel='canonical']");
@@ -51,13 +111,20 @@ export default function App() {
       document.head.appendChild(canonical);
     }
 
-    canonical.setAttribute(
-      "href",
-      `https://www.pdfagora.com.br/${
-        activeToolId === "juntar-pdf" ? "" : activeToolId
-      }`
-    );
-  }, [activeTool, activeToolId]);
+    canonical.setAttribute("href", canonicalUrl);
+  }, [activeTool, activeToolId, activePageId]);
+
+  useEffect(() => {
+    const specialPage = activePageId ? SPECIAL_PAGES[activePageId] : null;
+    if (!specialPage) return;
+
+    setTimeout(() => {
+      document.getElementById(specialPage.sectionId)?.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }, 150);
+  }, [activePageId]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -75,10 +142,26 @@ export default function App() {
     };
   }, []);
 
-  function handleSelectTool(toolId) {
-    setActiveToolId(toolId);
+  useEffect(() => {
+    function handlePopState() {
+      setRoute(getInitialRoute());
+    }
 
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
+
+  function handleSelectTool(toolId) {
     const nextUrl = toolId === "juntar-pdf" ? "/" : `/${toolId}`;
+
+    setRoute({
+      activeToolId: toolId,
+      activePageId: null
+    });
+
     window.history.pushState({}, "", nextUrl);
 
     setTimeout(() => {
@@ -102,7 +185,12 @@ export default function App() {
         onSignOut={handleSignOut}
       />
 
-      {canShowAds && <AdSlot label="Banner Superior" />}
+      {canShowAds && (
+        <AdSlot
+          label="Banner Superior"
+          slot={AD_SLOTS.top}
+        />
+      )}
 
       <ToolCards
         tools={tools}
@@ -112,30 +200,21 @@ export default function App() {
 
       <ToolWorkspace tool={activeTool} />
 
-      {canShowAds && <AdSlot label="Anúncio após a ferramenta" />}
-
-      <Header
-        session={session}
-        premiumStatus={premiumStatus}
-        onOpenAuth={setAuthModal}
-        onSignOut={handleSignOut}
-      />
-
-      {canShowAds && <AdSlot label="Banner Superior" />}
-
-      <ToolCards
-        tools={tools}
-        activeToolId={activeToolId}
-        onSelectTool={handleSelectTool}
-      />
-
-      <ToolWorkspace tool={activeTool} />
-
-      {canShowAds && <AdSlot label="Anúncio após a ferramenta" />}
+      {canShowAds && (
+        <AdSlot
+          label="Anúncio após a ferramenta"
+          slot={AD_SLOTS.afterTool}
+        />
+      )}
 
       <HowToUse />
 
-      {canShowAds && <AdSlot label="Anúncio no conteúdo" />}
+      {canShowAds && (
+        <AdSlot
+          label="Anúncio no conteúdo"
+          slot={AD_SLOTS.content}
+        />
+      )}
 
       <Faq />
 

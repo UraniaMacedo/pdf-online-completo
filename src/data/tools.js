@@ -6,7 +6,8 @@ export const tools = [
     description: "Una vários arquivos PDF em um único documento.",
     icon: "📄",
     seoTitle: "Juntar PDF online grátis",
-    seoDescription: "Junte dois ou mais arquivos PDF em um único documento diretamente no navegador."
+    seoDescription:
+      "Junte dois ou mais arquivos PDF em um único documento diretamente no navegador, sem instalar programas."
   },
   {
     id: "dividir-pdf",
@@ -15,7 +16,8 @@ export const tools = [
     description: "Separe páginas de um PDF e baixe em ZIP.",
     icon: "✂️",
     seoTitle: "Dividir PDF online grátis",
-    seoDescription: "Separe páginas de um arquivo PDF e baixe os documentos divididos em poucos cliques."
+    seoDescription:
+      "Separe páginas de um arquivo PDF online e baixe os documentos divididos em poucos cliques."
   },
   {
     id: "comprimir-pdf",
@@ -24,7 +26,8 @@ export const tools = [
     description: "Otimize o PDF para tentar reduzir o tamanho.",
     icon: "🗜️",
     seoTitle: "Comprimir PDF online grátis",
-    seoDescription: "Reduza o tamanho de arquivos PDF online sem instalar programas."
+    seoDescription:
+      "Comprima arquivos PDF online para tentar reduzir o tamanho do documento sem instalar programas."
   },
   {
     id: "imagem-para-pdf",
@@ -33,7 +36,8 @@ export const tools = [
     description: "Transforme imagens JPG e PNG em PDF.",
     icon: "🖼️",
     seoTitle: "Imagem para PDF online grátis",
-    seoDescription: "Converta imagens JPG e PNG em PDF diretamente no navegador."
+    seoDescription:
+      "Converta imagens JPG e PNG em PDF diretamente no navegador de forma simples e rápida."
   },
   {
     id: "organizar-pdf",
@@ -42,7 +46,8 @@ export const tools = [
     description: "Reordene páginas do PDF informando a sequência.",
     icon: "🔢",
     seoTitle: "Organizar PDF online grátis",
-    seoDescription: "Organize e reordene páginas de um PDF online de forma simples."
+    seoDescription:
+      "Organize e reordene páginas de um PDF online de forma simples, rápida e sem instalar programas."
   },
   {
     id: "assinar-pdf",
@@ -51,7 +56,8 @@ export const tools = [
     description: "Adicione uma assinatura visual ao PDF.",
     icon: "✍️",
     seoTitle: "Assinar PDF online grátis",
-    seoDescription: "Insira uma assinatura visual em arquivos PDF diretamente no navegador."
+    seoDescription:
+      "Insira uma assinatura visual em arquivos PDF diretamente no navegador, sem instalar programas."
   }
 ];
 
