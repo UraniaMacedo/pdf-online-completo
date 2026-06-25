@@ -4,8 +4,9 @@ import FileList from "../components/FileList.jsx";
 import DownloadResult from "../components/DownloadResult.jsx";
 import { createDownloadUrl, filterPdfFiles } from "../utils/fileHelpers.js";
 import { mergePdfFiles } from "../utils/pdfTools.js";
+import { guardPdfPageLimit } from "../utils/freeLimit.js";
 
-export default function MergePdfTool() {
+export default function MergePdfTool({ premiumStatus, onUpgradeRequired }) {
   const [files, setFiles] = useState([]);
   const [downloadUrl, setDownloadUrl] = useState("");
   const [fileName, setFileName] = useState("pdf-juntado.pdf");
@@ -51,6 +52,16 @@ export default function MergePdfTool() {
 
     try {
       setLoading(true);
+
+      const canProcess = await guardPdfPageLimit({
+        files,
+        premiumStatus,
+        onUpgradeRequired,
+        toolName: "Juntar PDF"
+      });
+
+      if (!canProcess) return;
+
       const blob = await mergePdfFiles(files);
       setDownloadUrl(createDownloadUrl(blob));
     } catch (error) {

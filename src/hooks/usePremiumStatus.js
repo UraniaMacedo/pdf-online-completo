@@ -1,6 +1,30 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient.js";
 
+function isActivePremiumSubscription(subscription) {
+  if (!subscription) return false;
+
+  const activeStatuses = ["active", "trialing"];
+  const status = String(subscription.status || "").toLowerCase();
+
+  if (!activeStatuses.includes(status)) {
+    return false;
+  }
+
+  const periodEnd = subscription.current_period_end
+    ? new Date(subscription.current_period_end)
+    : null;
+
+  return !periodEnd || periodEnd > new Date();
+}
+
+function isActiveLegacyPremium(row) {
+  if (!row?.is_premium) return false;
+
+  const premiumUntil = row?.premium_until ? new Date(row.premium_until) : null;
+  return !premiumUntil || premiumUntil > new Date();
+}
+
 export function usePremiumStatus(session) {
   const [premiumStatus, setPremiumStatus] = useState({
     loading: false,
@@ -28,7 +52,34 @@ export function usePremiumStatus(session) {
         loading: true
       }));
 
-      const { data, error } = await supabase
+      const userEmail = session.user.email?.toLowerCase();
+
+      const { data: stripeSubscription, error: stripeError } = await supabase
+        .from("premium_subscriptions")
+        .select("status, plan, current_period_end")
+        .eq("email", userEmail)
+        .maybeSingle();
+
+      if (!isActive) return;
+
+      if (!stripeError && stripeSubscription) {
+        const isPremium = isActivePremiumSubscription(stripeSubscription);
+
+        setPremiumStatus({
+          loading: false,
+          isPremium,
+          plan: isPremium ? stripeSubscription.plan || "premium" : "free",
+          premiumUntil: stripeSubscription.current_period_end || null
+        });
+
+        return;
+      }
+
+      if (stripeError) {
+        console.warn("Não foi possível consultar premium_subscriptions:", stripeError);
+      }
+
+      const { data: legacySubscription, error: legacyError } = await supabase
         .from("user_subscriptions")
         .select("is_premium, plan, premium_until")
         .eq("user_id", session.user.id)
@@ -36,8 +87,8 @@ export function usePremiumStatus(session) {
 
       if (!isActive) return;
 
-      if (error) {
-        console.error(error);
+      if (legacyError) {
+        console.warn("Não foi possível consultar user_subscriptions:", legacyError);
         setPremiumStatus({
           loading: false,
           isPremium: false,
@@ -47,14 +98,13 @@ export function usePremiumStatus(session) {
         return;
       }
 
-      const premiumUntil = data?.premium_until ? new Date(data.premium_until) : null;
-      const isStillValid = !premiumUntil || premiumUntil > new Date();
+      const isPremium = isActiveLegacyPremium(legacySubscription);
 
       setPremiumStatus({
         loading: false,
-        isPremium: Boolean(data?.is_premium) && isStillValid,
-        plan: data?.plan || "free",
-        premiumUntil: data?.premium_until || null
+        isPremium,
+        plan: isPremium ? legacySubscription?.plan || "premium" : "free",
+        premiumUntil: legacySubscription?.premium_until || null
       });
     }
 

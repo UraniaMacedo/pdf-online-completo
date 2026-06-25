@@ -4,8 +4,9 @@ import FileList from "../components/FileList.jsx";
 import DownloadResult from "../components/DownloadResult.jsx";
 import { createDownloadUrl, filterImageFiles } from "../utils/fileHelpers.js";
 import { imageFilesToPdf } from "../utils/pdfTools.js";
+import { guardGeneratedPdfPageLimit } from "../utils/freeLimit.js";
 
-export default function ImageToPdfTool() {
+export default function ImageToPdfTool({ premiumStatus, onUpgradeRequired }) {
   const [files, setFiles] = useState([]);
   const [downloadUrl, setDownloadUrl] = useState("");
   const [fileName, setFileName] = useState("imagens-convertidas.pdf");
@@ -100,6 +101,19 @@ export default function ImageToPdfTool() {
       setDownloadUrl("");
       setStatusType("info");
       setStatusMessage("Convertendo suas imagens para PDF...");
+
+      const canProcess = guardGeneratedPdfPageLimit({
+        pageCount: files.length,
+        premiumStatus,
+        onUpgradeRequired,
+        toolName: "Imagem para PDF"
+      });
+
+      if (!canProcess) {
+        setStatusMessage("");
+        setStatusType("");
+        return;
+      }
 
       const blob = await imageFilesToPdf(files);
       const url = createDownloadUrl(blob);

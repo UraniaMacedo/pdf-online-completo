@@ -8,6 +8,7 @@ import {
   formatFileSize
 } from "../utils/fileHelpers.js";
 import { compressPdfLight, compressPdfStrong } from "../utils/pdfTools.js";
+import { guardPdfPageLimit } from "../utils/freeLimit.js";
 
 const strongCompressionOptions = {
   forte: {
@@ -27,7 +28,7 @@ const strongCompressionOptions = {
   }
 };
 
-export default function CompressPdfTool() {
+export default function CompressPdfTool({ premiumStatus, onUpgradeRequired }) {
   const [file, setFile] = useState(null);
   const [downloadUrl, setDownloadUrl] = useState("");
   const [resultSize, setResultSize] = useState(null);
@@ -63,6 +64,15 @@ export default function CompressPdfTool() {
     try {
       setLoading(true);
       resetResult();
+
+      const canProcess = await guardPdfPageLimit({
+        files: [file],
+        premiumStatus,
+        onUpgradeRequired,
+        toolName: "Comprimir PDF"
+      });
+
+      if (!canProcess) return;
 
       let blob;
 

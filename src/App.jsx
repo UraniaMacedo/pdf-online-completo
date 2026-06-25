@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Header from "./components/Header.jsx";
 import ToolCards from "./components/ToolCards.jsx";
 import ToolWorkspace from "./components/ToolWorkspace.jsx";
@@ -8,9 +8,11 @@ import Faq from "./components/Faq.jsx";
 import LegalPages from "./components/LegalPages.jsx";
 import Footer from "./components/Footer.jsx";
 import AuthModal from "./components/AuthModal.jsx";
+import UpgradeModal from "./components/UpgradeModal.jsx";
 import { getToolById, tools } from "./data/tools.js";
 import { supabase } from "./lib/supabaseClient.js";
 import { usePremiumStatus } from "./hooks/usePremiumStatus.js";
+import { siteConfig } from "./config/siteConfig.js";
 
 // IMPORTANTE: deixe como false para o sistema respeitar usuários premium.
 // Se precisar forçar anúncios durante revisão do Google, altere para true.
@@ -19,11 +21,7 @@ const ADSENSE_REVIEW_MODE = false;
 // Depois que criar blocos de anúncio no AdSense, coloque os IDs aqui.
 // Exemplo: top: "1234567890"
 // Se você usar apenas Anúncios Automáticos, pode deixar vazio.
-const AD_SLOTS = {
-  top: "",
-  afterTool: "",
-  content: ""
-};
+const AD_SLOTS = siteConfig.adSlots;
 
 const SITE_URL = "https://www.pdfagora.com.br";
 
@@ -70,6 +68,7 @@ export default function App() {
   const [route, setRoute] = useState(getInitialRoute);
   const [session, setSession] = useState(null);
   const [authModal, setAuthModal] = useState(null);
+  const [upgradeModal, setUpgradeModal] = useState(null);
 
   const activeToolId = route.activeToolId;
   const activePageId = route.activePageId;
@@ -198,7 +197,11 @@ export default function App() {
         onSelectTool={handleSelectTool}
       />
 
-      <ToolWorkspace tool={activeTool} />
+      <ToolWorkspace
+        tool={activeTool}
+        premiumStatus={premiumStatus}
+        onUpgradeRequired={setUpgradeModal}
+      />
 
       {canShowAds && (
         <AdSlot
@@ -224,6 +227,15 @@ export default function App() {
       />
 
       <Footer />
+
+      {upgradeModal && (
+        <UpgradeModal
+          details={upgradeModal}
+          session={session}
+          onClose={() => setUpgradeModal(null)}
+          onOpenAuth={setAuthModal}
+        />
+      )}
 
       {authModal && (
         <AuthModal

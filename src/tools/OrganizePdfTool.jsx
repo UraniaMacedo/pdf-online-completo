@@ -4,8 +4,9 @@ import FileList from "../components/FileList.jsx";
 import DownloadResult from "../components/DownloadResult.jsx";
 import { createDownloadUrl, filterPdfFiles, parsePageOrder } from "../utils/fileHelpers.js";
 import { getPdfPageCount, organizePdfPages } from "../utils/pdfTools.js";
+import { guardGeneratedPdfPageLimit, guardPdfPageLimit } from "../utils/freeLimit.js";
 
-export default function OrganizePdfTool() {
+export default function OrganizePdfTool({ premiumStatus, onUpgradeRequired }) {
   const [file, setFile] = useState(null);
   const [pageCount, setPageCount] = useState(null);
   const [pageOrder, setPageOrder] = useState("");
@@ -26,6 +27,21 @@ export default function OrganizePdfTool() {
 
     try {
       const count = await getPdfPageCount(selectedFile);
+
+      const canUseFile = guardGeneratedPdfPageLimit({
+        pageCount: count,
+        premiumStatus,
+        onUpgradeRequired,
+        toolName: "Organizar PDF"
+      });
+
+      if (!canUseFile) {
+        setFile(null);
+        setPageCount(null);
+        setPageOrder("");
+        return;
+      }
+
       setPageCount(count);
       setPageOrder(Array.from({ length: count }, (_, index) => index + 1).join(","));
     } catch (error) {
@@ -42,6 +58,16 @@ export default function OrganizePdfTool() {
 
     try {
       setLoading(true);
+
+      const canProcess = await guardPdfPageLimit({
+        files: [file],
+        premiumStatus,
+        onUpgradeRequired,
+        toolName: "Organizar PDF"
+      });
+
+      if (!canProcess) return;
+
       const pages = parsePageOrder(pageOrder, pageCount);
       const blob = await organizePdfPages(file, pages);
       setDownloadUrl(createDownloadUrl(blob));

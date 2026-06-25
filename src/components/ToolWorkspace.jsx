@@ -14,7 +14,7 @@ const toolComponents = {
   "assinar-pdf": SignPdfTool
 };
 
-export default function ToolWorkspace({ tool }) {
+export default function ToolWorkspace({ tool, premiumStatus, onUpgradeRequired }) {
   const SelectedTool = toolComponents[tool.id] || MergePdfTool;
 
   return (
@@ -27,7 +27,10 @@ export default function ToolWorkspace({ tool }) {
         </div>
       </div>
 
-      <SelectedTool />
+      <SelectedTool
+        premiumStatus={premiumStatus}
+        onUpgradeRequired={onUpgradeRequired}
+      />
     </section>
   );
 }

@@ -3,12 +3,11 @@ import { siteConfig } from "../config/siteConfig.js";
 export default function LegalPages() {
   const updatedAt = "19/06/2026";
 
-  const STRIPE_MONTHLY_PAYMENT_LINK =
-    "https://buy.stripe.com/7sYaEQ1iW9tu2sV84I00000";
+  const STRIPE_MONTHLY_PAYMENT_LINK = siteConfig.premiumMonthlyCheckoutUrl || siteConfig.premiumCheckoutUrl;
 
-  // Cole aqui o link do produto anual quando criar no Stripe.
-  // Enquanto estiver vazio, o botão anual abre o e-mail de contato.
-  const STRIPE_ANNUAL_PAYMENT_LINK = "";
+  // Cole o link anual em siteConfig.premiumAnnualCheckoutUrl quando criar no Stripe.
+  // Enquanto estiver vazio, o botão anual usa o checkout principal.
+  const STRIPE_ANNUAL_PAYMENT_LINK = siteConfig.premiumAnnualCheckoutUrl || siteConfig.premiumCheckoutUrl;
 
   function handlePremiumClick(planType = "monthly") {
     const paymentLink =
@@ -202,6 +201,7 @@ export default function LegalPages() {
               <div style={styles.freePrice}>R$ 0</div>
 
               <ul style={styles.list}>
+                <li>Processamento de PDFs de até {siteConfig.freePlanPdfPageLimit} páginas</li>
                 <li>Acesso às ferramentas essenciais do ecossistema</li>
                 <li>Exibição integrada de anúncios publicitários</li>
                 <li>Ideal para demandas esporádicas e tarefas rápidas</li>
@@ -218,6 +218,7 @@ export default function LegalPages() {
               </div>
 
               <ul style={styles.list}>
+                <li>Processamento de PDFs maiores</li>
                 <li>Remoção dos blocos de anúncios do Google</li>
                 <li>Interface mais limpa e focada na produtividade</li>
                 <li>Pagamento seguro pelo Stripe</li>
@@ -248,6 +249,7 @@ export default function LegalPages() {
               </div>
 
               <ul style={styles.list}>
+                <li>Processamento de PDFs maiores</li>
                 <li>Remoção dos blocos de anúncios durante o período contratado</li>
                 <li>Pagamento anual simplificado</li>
                 <li>Mais praticidade para usuários frequentes</li>

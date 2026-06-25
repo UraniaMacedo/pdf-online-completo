@@ -1,14 +1,8 @@
 import { siteConfig } from "../config/siteConfig.js";
 
 export default function PremiumSection({ session, premiumStatus, onOpenAuth }) {
-  const contactSubject = encodeURIComponent("Ativação do Plano Premium - PDF AGORA");
-  const contactBody = encodeURIComponent(
-    session?.user?.email
-      ? `Olá, quero ativar o Plano Premium do PDF AGORA.\n\nE-mail da minha conta: ${session.user.email}`
-      : "Olá, quero ativar o Plano Premium do PDF AGORA."
-  );
-
-  const contactUrl = `mailto:${siteConfig.contactEmail}?subject=${contactSubject}&body=${contactBody}`;
+  const checkoutUrl = siteConfig.premiumCheckoutUrl;
+  const annualCheckoutUrl = siteConfig.premiumAnnualCheckoutUrl || checkoutUrl;
 
   return (
     <section className="premium-section" id="planos">
@@ -18,19 +12,16 @@ export default function PremiumSection({ session, premiumStatus, onOpenAuth }) {
         <h2>Mais liberdade para usar o PDF AGORA</h2>
 
         <p>
-          Use o PDF AGORA gratuitamente ou ative o Premium para navegar sem
-          anúncios e ter acesso prioritário aos novos recursos da plataforma.
+          Use o PDF AGORA gratuitamente com PDFs de até {siteConfig.freePlanPdfPageLimit} páginas ou ative o Premium para processar PDFs maiores, remover anúncios da conta e ter acesso prioritário aos novos recursos da plataforma.
         </p>
 
         {premiumStatus?.isPremium ? (
           <div className="premium-warning">
-            Seu plano Premium está ativo. Os espaços de anúncio ficam ocultos
-            enquanto você estiver conectado nesta conta.
+            Seu plano Premium está ativo. Os espaços de anúncio ficam ocultos enquanto você estiver conectado nesta conta.
           </div>
         ) : (
           <div className="premium-warning">
-            O Premium está disponível para contas cadastradas. Nesta fase
-            inicial, a ativação é feita por solicitação de contato.
+            Para reconhecimento automático, use no checkout o mesmo e-mail usado na sua conta do PDF AGORA.
           </div>
         )}
       </div>
@@ -46,10 +37,9 @@ export default function PremiumSection({ session, premiumStatus, onOpenAuth }) {
           <p>Para quem precisa resolver tarefas rápidas com PDF.</p>
 
           <ul>
-            <li>Ferramentas básicas de PDF</li>
-            <li>Juntar, dividir e converter arquivos</li>
-            <li>Compressão segura e forte</li>
-            <li>Uso com anúncios</li>
+            <li>Processamento de PDFs de até {siteConfig.freePlanPdfPageLimit} páginas</li>
+            <li>Juntar, dividir, comprimir, organizar, assinar e converter</li>
+            <li>Uso com banners de anúncio</li>
             <li>Ideal para uso ocasional</li>
           </ul>
 
@@ -63,15 +53,14 @@ export default function PremiumSection({ session, premiumStatus, onOpenAuth }) {
 
           <h3>Plano Premium</h3>
 
-          <strong>R$ 40/ano</strong>
+          <strong>{siteConfig.premiumAnnualPrice}/ano</strong>
 
           <p>Para quem usa PDF com frequência e quer mais praticidade.</p>
 
           <ul>
+            <li>Processamento de PDFs maiores</li>
             <li>Sem anúncios ao entrar na conta Premium</li>
             <li>Acesso prioritário a novos recursos</li>
-            <li>Preparado para arquivos maiores</li>
-            <li>Preparado para conversões em lote</li>
             <li>Conta identificada por e-mail</li>
           </ul>
 
@@ -79,8 +68,20 @@ export default function PremiumSection({ session, premiumStatus, onOpenAuth }) {
             <button className="primary-button small" disabled>
               Premium ativo
             </button>
+          ) : checkoutUrl ? (
+            <a
+              className="primary-button small"
+              href={annualCheckoutUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Assinar Premium
+            </a>
           ) : session?.user ? (
-            <a className="primary-button small" href={contactUrl}>
+            <a
+              className="primary-button small"
+              href={`mailto:${siteConfig.contactEmail}?subject=${encodeURIComponent("Ativação Premium PDF AGORA")}`}
+            >
               Solicitar ativação
             </a>
           ) : (

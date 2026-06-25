@@ -4,8 +4,9 @@ import FileList from "../components/FileList.jsx";
 import DownloadResult from "../components/DownloadResult.jsx";
 import { createDownloadUrl, filterPdfFiles } from "../utils/fileHelpers.js";
 import { splitPdfIntoPages } from "../utils/pdfTools.js";
+import { guardPdfPageLimit } from "../utils/freeLimit.js";
 
-export default function SplitPdfTool() {
+export default function SplitPdfTool({ premiumStatus, onUpgradeRequired }) {
   const [file, setFile] = useState(null);
   const [downloadUrl, setDownloadUrl] = useState("");
   const [totalPages, setTotalPages] = useState(null);
@@ -32,6 +33,16 @@ export default function SplitPdfTool() {
 
     try {
       setLoading(true);
+
+      const canProcess = await guardPdfPageLimit({
+        files: [file],
+        premiumStatus,
+        onUpgradeRequired,
+        toolName: "Dividir PDF"
+      });
+
+      if (!canProcess) return;
+
       const result = await splitPdfIntoPages(file);
       setTotalPages(result.totalPages);
       setDownloadUrl(createDownloadUrl(result.blob));

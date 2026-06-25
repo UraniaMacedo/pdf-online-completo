@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import { siteConfig } from "../config/siteConfig.js";
 
-const ADSENSE_CLIENT = "ca-pub-5046960619406551";
+const ADSENSE_CLIENT = siteConfig.adsensePublisherId;
 
 function isLocalhost() {
   if (typeof window === "undefined") return true;

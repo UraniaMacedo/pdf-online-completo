@@ -955,3 +955,36 @@ details p {
   background: #7b8b45;
   color: #ffffff;
 }
+
+
+.upgrade-modal .badge {
+  margin-bottom: 10px;
+}
+
+.upgrade-benefits {
+  margin: 18px 0;
+  padding: 16px;
+  border-radius: 18px;
+  background: #f8f4ee;
+  color: #2d241c;
+}
+
+.upgrade-benefits strong {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.upgrade-benefits ul {
+  margin: 0;
+  padding-left: 18px;
+  color: #5a4a3d;
+  line-height: 1.7;
+}
+
+.upgrade-note {
+  display: block;
+  margin-top: 14px;
+  color: #75685c;
+  line-height: 1.45;
+  text-align: center;
+}

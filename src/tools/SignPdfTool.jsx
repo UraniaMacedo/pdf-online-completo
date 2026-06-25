@@ -4,8 +4,9 @@ import FileList from "../components/FileList.jsx";
 import DownloadResult from "../components/DownloadResult.jsx";
 import { createDownloadUrl, filterPdfFiles } from "../utils/fileHelpers.js";
 import { signPdfWithText } from "../utils/pdfTools.js";
+import { guardPdfPageLimit } from "../utils/freeLimit.js";
 
-export default function SignPdfTool() {
+export default function SignPdfTool({ premiumStatus, onUpgradeRequired }) {
   const [file, setFile] = useState(null);
   const [signatureText, setSignatureText] = useState("");
   const [pageNumber, setPageNumber] = useState(1);
@@ -39,6 +40,16 @@ export default function SignPdfTool() {
 
     try {
       setLoading(true);
+
+      const canProcess = await guardPdfPageLimit({
+        files: [file],
+        premiumStatus,
+        onUpgradeRequired,
+        toolName: "Assinar PDF"
+      });
+
+      if (!canProcess) return;
+
       const blob = await signPdfWithText(file, {
         signatureText,
         pageNumber,
