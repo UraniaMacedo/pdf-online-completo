@@ -1,15 +1,31 @@
-# PDF AGORA — ajustes finais de monetização
+# PDF AGORA
+## 🌐 Live Demo
+
+https://www.pdfagora.com.br
 
 Projeto React/Vite com ferramentas PDF online, AdSense, Stripe, Supabase e limite Free/Premium.
 
-## O que foi ajustado
+## 🛠 Technologies
 
-- Limite do plano grátis: usuários gratuitos só processam PDFs de até 3 páginas.
-- Modal de vendas Premium: ao ultrapassar o limite, o app bloqueia o processamento e abre o modal com botão direto para o checkout Stripe.
-- Botões Premium: planos apontam para os links configurados em `src/config/siteConfig.js`.
-- AdSense: Publisher ID centralizado em `siteConfig.js`; script já está no `index.html`; `ads.txt` já está em `public/ads.txt`.
-- Premium via Stripe: o hook de Premium agora consulta a tabela `premium_subscriptions`, que é a mesma gravada pelo webhook Stripe.
-- `.gitignore` corrigido e `.env.example` criado sem chaves reais.
+- Node.js
+- JavaScript
+- Vite
+- Supabase
+- Stripe API
+- Vercel
+- HTML5
+- CSS3
+
+## 🚀 Features
+
+✅ Merge PDF files  
+✅ Split PDF files  
+✅ Compress PDF files  
+✅ Convert images to PDF  
+✅ Premium subscription system  
+✅ Stripe payment integration  
+✅ Google AdSense integration  
+✅ User authenticationis.
 
 ## Arquivos principais
 
